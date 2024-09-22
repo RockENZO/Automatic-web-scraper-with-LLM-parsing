@@ -8,6 +8,9 @@ This project is an automatic web scraper that uses the LLM Ollama 3.1 to parse t
 - Split the content into manageable chunks.
 - Parse the content using the LLM Ollama 3.1 based on user-provided descriptions.
 
+## Demo
+![Web Scrapper](ScreenRecording.gif)
+
 ## Installation
 ### Prerequisites
 - Python 3.7 or higher
@@ -42,6 +45,7 @@ source ai/bin/activate
 .\venv\Scripts\activate
 ``` 
 2. Run the Streamlit application:
+
 ```python
 streamlit run main.py
 ```
