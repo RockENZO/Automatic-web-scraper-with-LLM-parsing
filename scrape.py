@@ -6,9 +6,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 import time
-from bs4 import BeautifulSoup
+from content import extract_body_content, clean_body_content, split_dom_content
 import logging
-from typing import Optional
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -85,81 +84,4 @@ def scrape_website(website: str, wait_time: int = DEFAULT_WAIT_TIME, headless: b
     finally:
         driver.quit()
         logger.info("Browser closed")
-
-def extract_body_content(html_content):
-    """
-    Extract body content from HTML.
-    
-    Args:
-        html_content (str): Raw HTML content
-        
-    Returns:
-        str: Body content as string
-    """
-    try:
-        soup = BeautifulSoup(html_content, "html.parser")
-        body_content = soup.body
-        if body_content:
-            return str(body_content)
-        return "No body content found on the page"
-    except Exception as e:
-        logger.error(f"Error extracting body content: {str(e)}")
-        return "Error extracting body content"
-
-
-def clean_body_content(body_content):
-    """
-    Clean body content by removing scripts, styles, and formatting text.
-    
-    Args:
-        body_content (str): Raw body content
-        
-    Returns:
-        str: Cleaned and formatted text content
-    """
-    try:
-        soup = BeautifulSoup(body_content, "html.parser")
-        
-        # Remove unwanted elements
-        for element in soup(["script", "style", "nav", "footer", "header", "aside"]):
-            element.extract()
-        
-        # Remove comments
-        for comment in soup.findAll(text=lambda text: isinstance(text, BeautifulSoup.Comment)):
-            comment.extract()
-        
-        # Get text with proper spacing
-        cleaned_content = soup.get_text(separator="\n")
-        
-        # Clean up whitespace and empty lines
-        lines = [line.strip() for line in cleaned_content.splitlines()]
-        clean_lines = [line for line in lines if line and len(line) > 2]
-        
-        return "\n".join(clean_lines)
-    except Exception as e:
-        logger.error(f"Error cleaning body content: {str(e)}")
-        return body_content  # Return original content if cleaning fails
-
-
-def split_dom_content(dom_content, max_length=6000):
-    """
-    Split DOM content into manageable chunks for processing.
-    
-    Args:
-        dom_content (str): Content to split
-        max_length (int): Maximum length of each chunk
-        
-    Returns:
-        list: List of content chunks
-    """
-    if len(dom_content) <= max_length:
-        return [dom_content]
-    
-    chunks = []
-    for i in range(0, len(dom_content), max_length):
-        chunk = dom_content[i:i + max_length]
-        chunks.append(chunk)
-    
-    logger.info(f"Split content into {len(chunks)} chunks")
-    return chunks
 
