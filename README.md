@@ -2,6 +2,12 @@
 
 This project is an automatic web scraper that uses the LLM Ollama gpt-oss:20b to parse the body content of a web page. The application is built using Streamlit for the user interface and various Python libraries for web scraping and parsing.
 
+## Repository and URL safety
+
+The local Python environment is ignored by Git. Create `.venv` during setup; do not commit it. Run isolated checks with `python -m unittest discover -s tests`. The existing `test_scraper.py` is a manual integration check that needs Chrome, a live site, and Ollama.
+
+The scraper accepts only HTTP(S) URLs resolving to public IP addresses and rejects localhost, private addresses, credentials, and unusual ports. DNS can change after validation, and browsers can follow redirects. If you deploy this as a shared web service, also restrict outbound network access and apply request limits at the hosting layer.
+
 ## Features
 - 🚀 **Advanced Web Scraping**: Scrape the body content of any web page with improved error handling
 - 🧹 **Smart Content Cleaning**: Clean the scraped content by removing scripts, styles, and unwanted elements
@@ -40,17 +46,17 @@ ollama pull gpt-oss:20b
 
 ### Create a virtual environment:
 ```bash
-python -m venv ai
+python -m venv .venv
 ```
 
 ### Activate the virtual environment:
 - On macOS and Linux:
 ```bash
-source ai/bin/activate
+source .venv/bin/activate
 ```
 - On Windows:
 ```bash
-.\ai\Scripts\activate
+.\.venv\Scripts\activate
 ``` 
 
 ### Installing dependencies:
@@ -73,11 +79,11 @@ ollama serve
 2. Activate the virtual environment (if not already activated):
 - On macOS and Linux:
 ```bash
-source ai/bin/activate
+source .venv/bin/activate
 ```
 - On Windows:
 ```bash
-.\ai\Scripts\activate
+.\.venv\Scripts\activate
 ``` 
 
 3. Run the Streamlit application:

@@ -1,0 +1,9 @@
+.venv/
+venv/
+ai/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.DS_Store
+.env
+*.log
