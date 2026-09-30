@@ -167,3 +167,15 @@ This utility will:
 ## License
 This project is licensed under the MIT License. See the LICENSE file for more details.
 
+
+## Extraction outcome and recovery
+
+Parsing returns `ParseResult` with `status`, extraction `text`, chunk counts, failed chunk indices and actual models used. Success, no matches, partial extraction and total failure are displayed separately. A failure message is never offered as extracted data. Partial downloads are explicitly labelled. Progress updates after every processed chunk.
+
+Fallback is attempted when an actual request fails, including connection and missing-model errors; creating a model object alone is not treated as proof it is available. Requests have a 60-second timeout, two attempts per model per chunk, and a one-second retry delay. Install both configured models with `ollama pull`, or set `OLLAMA_MODEL`, `OLLAMA_FALLBACK_MODEL` and `OLLAMA_BASE_URL`. The default chunk is 3,000 characters, maximum 4,000, with an 8,192-token model context; character limits are conservative and do not guarantee token fit for all languages.
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+Parser tests use injected model doubles and cover fallback, all-failed, partial, empty, successful and invalid inputs without Chrome or Ollama. They verify control flow, not extraction accuracy. A real model may hallucinate or follow malicious webpage instructions; verify important output against the source. The application is a local demo; URL checks alone do not make Selenium safe to expose as a public scraping service.

@@ -7,6 +7,7 @@ from scrape import (
     clean_body_content,
 )
 from parse import parse_with_ollama
+import config
 
 # Configure Streamlit page
 st.set_page_config(
@@ -16,7 +17,7 @@ st.set_page_config(
 )
 
 st.title("🤖 Automatic Web Scraper")
-st.markdown("*Powered by Ollama gpt-oss:20b model*")
+st.caption(f"Ollama model: {config.OLLAMA_MODEL}; fallback: {config.OLLAMA_FALLBACK_MODEL}")
 
 # Add sidebar with information
 with st.sidebar:
@@ -29,7 +30,7 @@ with st.sidebar:
     """)
     
     st.header("⚙️ Settings")
-    chunk_size = st.slider("Chunk size for processing", 2000, 10000, 6000, 500)
+    chunk_size = st.slider("Chunk size for processing", config.MIN_CHUNK_SIZE, config.MAX_CHUNK_SIZE, config.DEFAULT_CHUNK_SIZE, 500)
 
 url = st.text_input("🌐 Enter the URL of the website you want to scrape", placeholder="https://example.com")
 
@@ -39,6 +40,9 @@ if st.button("🤳 Scrape Website", type="primary"):
     elif not url.startswith(('http://', 'https://')):
         st.error("Please enter a valid URL starting with http:// or https://")
     else:
+        # Clear stale content before attempting a different URL.
+        st.session_state.pop('dom_content', None)
+        st.session_state.pop('original_url', None)
         with st.spinner(f"Scraping {url}..."):
             try:
                 start_time = time.time()
@@ -46,6 +50,9 @@ if st.button("🤳 Scrape Website", type="primary"):
                 body_content = extract_body_content(result)
                 cleaned_content = clean_body_content(body_content)
                 
+                if not cleaned_content.strip():
+                    raise ValueError("The page has no readable text to extract")
+
                 # Store in session state
                 st.session_state.dom_content = cleaned_content
                 st.session_state.original_url = url
@@ -60,7 +67,7 @@ if st.button("🤳 Scrape Website", type="primary"):
                 with col2:
                     st.metric("Word Count", f"{len(cleaned_content.split()):,}")
                 with col3:
-                    estimated_chunks = len(cleaned_content) // chunk_size + 1
+                    estimated_chunks = (len(cleaned_content) + chunk_size - 1) // chunk_size
                     st.metric("Estimated Chunks", estimated_chunks)
                 
             except Exception as e:
@@ -106,27 +113,32 @@ if "dom_content" in st.session_state:
                     progress_bar = st.progress(0)
                     status_text = st.empty()
                     
-                    results = parse_with_ollama(dom_chunks, parse_description)
-                    
+                    def update_progress(done, total):
+                        progress_bar.progress(done / total)
+                        status_text.info(f"Processed {done}/{total} chunks")
+
+                    result = parse_with_ollama(dom_chunks, parse_description, progress=update_progress)
                     parse_time = time.time() - start_time
-                    progress_bar.progress(100)
-                    status_text.success(f"✅ Parsing completed in {parse_time:.2f} seconds")
-                    
-                    st.subheader("📊 Parsing Results")
-                    if results and results != "No relevant information found matching your description.":
-                        st.markdown("### Extracted Information:")
-                        st.write(results)
-                        
-                        # Add download button for results
+                    if result.status == "failed":
+                        status_text.error("Extraction failed for every chunk. Check Ollama is running and the configured models are installed.")
+                    elif result.status == "partial":
+                        status_text.warning(f"Incomplete extraction: {result.completed_chunks}/{result.total_chunks} chunks completed. Failed chunks: {result.failed_chunks}")
+                    elif result.status == "empty":
+                        status_text.info("Extraction completed; no matching information was returned.")
+                    else:
+                        status_text.success(f"Extraction completed in {parse_time:.2f} seconds")
+                    if result.models_used:
+                        st.caption("Models used: " + ", ".join(result.models_used))
+                    if result.text:
+                        st.subheader("Extraction results" if result.status == "success" else "Partial extraction results")
+                        st.write(result.text)
                         st.download_button(
-                            label="💾 Download Results",
-                            data=results,
-                            file_name=f"parsed_results_{int(time.time())}.txt",
+                            label="Download partial results" if result.status == "partial" else "Download results",
+                            data=result.text,
+                            file_name=f"{'partial_' if result.status == 'partial' else ''}parsed_results_{int(time.time())}.txt",
                             mime="text/plain"
                         )
-                    else:
-                        st.warning("⚠️ No relevant information found matching your description. Try being more specific or check if the content contains what you're looking for.")
-                        
+
                 except Exception as e:
                     st.error(f"❌ Error during parsing: {str(e)}")
 else:
