@@ -1,0 +1,24 @@
+{
+  "kind": "synthetic manually specified regression fixtures",
+  "version": 1,
+  "case_ids": [
+    "product_cards",
+    "table_inventory",
+    "contact_footer",
+    "hidden_prices",
+    "short_values",
+    "missing_field",
+    "unicode_products",
+    "duplicate_cards",
+    "no_matches",
+    "script_noise",
+    "page_instructions",
+    "boundary_record",
+    "event_table",
+    "header_contact",
+    "phone_records",
+    "row_headers"
+  ],
+  "selection": "all 16 predefined cases, no test-driven model or prompt tuning",
+  "chunk_budget": 1400
+}

@@ -1,0 +1,15 @@
+{
+  "id": "script_noise",
+  "html": "<html><body><script>name: Secret Product; price: $1</script><style>.hidden{color:red}</style><article><p>name: Pine Table</p><p>price: $99</p></article></body></html>",
+  "fields": [
+    "name",
+    "price"
+  ],
+  "expected": [
+    {
+      "name": "Pine Table",
+      "price": "$99"
+    }
+  ],
+  "task": "Extract displayed product names and prices."
+}

@@ -1,0 +1,19 @@
+{
+  "id": "phone_records",
+  "html": "<html><body><article><p>name: Theo Moss</p><p>phone: +61 8 5550 0101</p></article><article><p>name: Iris Vale</p><p>phone: +61 8 5550 0102</p></article></body></html>",
+  "fields": [
+    "name",
+    "phone"
+  ],
+  "expected": [
+    {
+      "name": "Theo Moss",
+      "phone": "+61 8 5550 0101"
+    },
+    {
+      "name": "Iris Vale",
+      "phone": "+61 8 5550 0102"
+    }
+  ],
+  "task": "Extract contact names and phone numbers verbatim."
+}

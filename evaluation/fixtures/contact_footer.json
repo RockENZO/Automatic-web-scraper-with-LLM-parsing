@@ -1,0 +1,15 @@
+{
+  "id": "contact_footer",
+  "html": "<html><body><main><h1>Contacts</h1></main><footer><address><p>name: Ada Reed</p><p>email: ada@example.test</p></address></footer></body></html>",
+  "fields": [
+    "name",
+    "email"
+  ],
+  "expected": [
+    {
+      "name": "Ada Reed",
+      "email": "ada@example.test"
+    }
+  ],
+  "task": "Extract contact name and email."
+}

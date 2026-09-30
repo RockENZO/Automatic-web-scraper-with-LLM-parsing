@@ -1,0 +1,22 @@
+{
+  "id": "event_table",
+  "html": "<html><body><table><tr><th>name</th><th>date</th><th>venue</th></tr><tr><td>River Expo</td><td>2026-10-14</td><td>North Hall</td></tr><tr><td>Garden Fair</td><td>2026-11-02</td><td>West Park</td></tr></table></body></html>",
+  "fields": [
+    "name",
+    "date",
+    "venue"
+  ],
+  "expected": [
+    {
+      "name": "River Expo",
+      "date": "2026-10-14",
+      "venue": "North Hall"
+    },
+    {
+      "name": "Garden Fair",
+      "date": "2026-11-02",
+      "venue": "West Park"
+    }
+  ],
+  "task": "Extract event names, dates and venues verbatim."
+}

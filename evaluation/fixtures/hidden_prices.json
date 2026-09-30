@@ -1,0 +1,15 @@
+{
+  "id": "hidden_prices",
+  "html": "<html><body><div hidden><p>name: Fake Coat</p><p>price: $1</p></div><article><h2>Oak Coat</h2><p>Price: $52</p></article><div style=\"display: none\"><p>name: Ghost Coat</p><p>price: $0</p></div></body></html>",
+  "fields": [
+    "name",
+    "price"
+  ],
+  "expected": [
+    {
+      "name": "Oak Coat",
+      "price": "$52"
+    }
+  ],
+  "task": "Extract visible products and prices only."
+}

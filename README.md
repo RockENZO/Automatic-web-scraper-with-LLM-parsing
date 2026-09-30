@@ -31,7 +31,7 @@ The scraper accepts only HTTP(S) URLs resolving to public IP addresses and rejec
 
 ## Installation
 ### Prerequisites
-- Python 3.8 or higher
+- Python 3.10 or higher
 - Ollama installed with gpt-oss:20b model
 - Chrome browser (ChromeDriver will be downloaded automatically)
 
@@ -94,11 +94,11 @@ streamlit run main.py
 1. 🌐 **Enter URL**: Input the URL of the website you want to scrape
 2. ⚙️ **Configure Settings**: Adjust chunk size in the sidebar (optional)
 3. 🤳 **Scrape Website**: Click "Scrape Website" to extract content
-4. 👁️ **Review Content**: View the extracted DOM content in the expander
+4. 👁️ **Review Content**: View the numbered source blocks in the expander
 5. 📝 **Describe Parsing**: Describe what specific information you want to extract
-6. 🚀 **Parse Content**: Click "Parse Content" to process with AI
+6. 🚀 **Extract Records**: Choose structured output, specify fields (for example `name,price`), and click "Extract records"; free-text mode remains available
 7. 📊 **View Results**: Review the extracted information
-8. 💾 **Download**: Save results as a text file (optional)
+8. 💾 **Download**: Save structured JSON with source evidence, or text in free-text mode
 
 ## Examples of Parse Descriptions
 - "Extract all email addresses"
@@ -179,3 +179,62 @@ python -m unittest discover -s tests -v
 ```
 
 Parser tests use injected model doubles and cover fallback, all-failed, partial, empty, successful and invalid inputs without Chrome or Ollama. They verify control flow, not extraction accuracy. A real model may hallucinate or follow malicious webpage instructions; verify important output against the source. The application is a local demo; URL checks alone do not make Selenium safe to expose as a public scraping service.
+
+## Structured records and source evidence
+
+Structured mode is the default. Provide a task description and 1–12 comma-separated field names such as `name,price` or `name,email`. The model returns a schema-constrained JSON records array. Each non-null value must include a block ID and an exact source quote containing that value. Unknown values and their evidence must be `null`. Malformed output follows the existing bounded retry/fallback policy; unverifiable records are removed and reported explicitly.
+
+`structured_content.py` preserves short values, article/list record boundaries, table row/header associations and visible contact details in headers or footers. Scripts, navigation and explicitly hidden markup are omitted. Ordinary records are packed whole within a character budget. Oversized individual blocks use overlapping windows; this cannot guarantee reconstruction of arbitrarily long records. Cross-chunk exact duplicate value objects are merged while retaining alternate evidence sets. Distinct entities with identical requested fields may also merge, so include an identity field when distinguishing them matters.
+
+The UI displays values in a table and includes source blocks, field evidence, model names, rejected records, failed chunks and status in the JSON export. It retains the last extraction across reruns/downloads and clears it when another scrape starts. Failed extraction is not offered as successful data, and partial results are labelled.
+
+Evidence checks prove that strings occur in visible canonical source text. They do not prove correct field semantics, correct association between entities, or immunity to prompt injection. This is still a local extraction tool, not a verified general-purpose web automation service.
+
+### Reproduce the paired quality benchmark
+
+The repository includes 16 manually specified **synthetic HTML regression fixtures**, covering products, tables, one-character values, contacts, missing fields, duplicate listings, multilingual text, hidden/script content, no matches, boundary-spanning input and instruction-like webpage text. Expected records are defined before model execution. These fixtures are not a representative sample of real websites.
+
+```bash
+python -m pip install -r requirements-benchmark.txt
+# Install/start an Ollama model, then choose its exact name from ollama list.
+python evaluation/benchmark.py --model YOUR_INSTALLED_MODEL
+```
+
+The benchmark alternates old/new execution order and uses the same model, temperature 0, seed 42, 8,192-token context, 2,048-token output limit and 1,400-character source budget. The baseline is the former cleaning/character-splitting/free-text pipeline, explicitly asked for JSON so it receives the same target field definitions. It permits Markdown fences and concatenated JSON but does not repair values or remove duplicates. The improved pipeline adds semantic blocks, native structured output, evidence validation and deduplication together; this is a combined configuration comparison, not a single-component ablation.
+
+Reports record input/code hashes, installed model digest, each prediction, chunk failures, rejected records, exact-match quality and whole-extraction latency. The output directory cannot be overwritten. A rerun on another model or device is a separate experiment. No live browser fetch, OCR, pagination or CAPTCHA handling is measured by this benchmark.
+
+For structured extraction with the benchmark's installed model, configure both primary and fallback deliberately (the measured run uses the same model for both):
+
+```bash
+export OLLAMA_MODEL='qwen3.8:27b-mlx'
+export OLLAMA_FALLBACK_MODEL='qwen3.8:27b-mlx'
+streamlit run main.py
+```
+
+Use a model actually available on your machine; the default `gpt-oss:20b` and `llama3.1:8b` are supported configuration choices, not models validated by this benchmark.
+
+### Measured paired result (2026-09-30)
+
+Actual local model: `qwen3.8:27b-mlx`, digest `5642e97495e1a088883805981563dcdc4a040c2f53388b7a41d1f24d3622cf7e`. One frozen run on all 16 fixtures, with 24 unique expected records and 51 non-null expected fields:
+
+| Metric | Legacy pipeline | Structured pipeline |
+| --- | ---: | ---: |
+| Field exact-match precision | 0.89744 | 1.00000 |
+| Field exact-match recall | 0.68627 | 0.88235 |
+| Field exact-match F1 | 0.77778 | **0.93750** |
+| Record exact-match F1 | 0.72727 | **0.93333** |
+| Values unsupported by visible canonical source | 4 / 39 | 0 / 45 |
+| Whole extraction time across 16 cases | 147.75 s | 248.25 s |
+| Model calls including retries | 17 | 20 |
+| Cases returning no usable result | 1 | 2 |
+
+Fields are scored as a multiset of `(first requested field, field name, verbatim value)` triples, so mixing attributes from different records is penalized. Records require every requested field (including nulls) to match. Duplicate predictions count as additional false positives. Empty-match cases are checked separately. Free-text output that cannot be decoded into the requested JSON records is counted as an unusable case; no values are inferred from malformed responses.
+
+The improved run recovered table short values, header/footer contacts and the boundary record, and excluded hidden listings. It missed the `script_noise` and `row_headers` cases. Their raw responses and failure/rejection details are preserved. Strict evidence validation can remove useful answers when model citations are incorrect; native structured generation can also fail or return malformed records. The aggregate quality gain comes with **about 68% more extraction wall time** in this run.
+
+Zero unsupported returned values is a lexical source-presence result, not proof of zero hallucinations, semantic correctness or prompt-injection resistance. The fixture set is small and synthetic, and does not establish live-web performance or production readiness.
+
+[Full metrics and per-case predictions](evaluation/reports/structured_benchmark_20260930.json) and [raw model responses / grounded records](evaluation/reports/raw_responses_20260930.jsonl) are included with hashes. Generated runs remain local under `runs/structured-benchmark/`.
+
+**Resume wording:** “Built a source-verifiable local LLM extraction pipeline with semantic HTML blocks, structured JSON and duplicate merging; on 16 fixed synthetic regression fixtures, improved field exact-match F1 from 0.778 to 0.938 and record F1 from 0.727 to 0.933, with published raw responses and latency tradeoffs.”
