@@ -1,0 +1,19 @@
+{
+  "id": "boundary_record",
+  "html": "<html><body><p>Introductory page notes for visitors. Introductory page notes for visitors. Introductory page notes for visitors. Introductory page notes for visitors. Introductory page notes for visitors. Introductory page notes for visitors. Introductory page notes for visitors. Introductory page notes for visitors. Introductory page notes for visitors. Introductory page notes for visitors. Introductory page notes for visitors. Introductory page notes for visitors. Introductory page notes for visitors. Introductory page notes for visitors. Introductory page notes for visitors. Introductory page notes for visitors. </p><article><p>name: Spruce Jacket</p><p>This jacket has practical outdoor features. This jacket has practical outdoor features. This jacket has practical outdoor features. This jacket has practical outdoor features. This jacket has practical outdoor features. This jacket has practical outdoor features. This jacket has practical outdoor features. This jacket has practical outdoor features. This jacket has practical outdoor features. This jacket has practical outdoor features. This jacket has practical outdoor features. This jacket has practical outdoor features. This jacket has practical outdoor features. This jacket has practical outdoor features. This jacket has practical outdoor features. This jacket has practical outdoor features. This jacket has practical outdoor features. This jacket has practical outdoor features. This jacket has practical outdoor features. This jacket has practical outdoor features. This jacket has practical outdoor features. This jacket has practical outdoor features. </p><p>price: $73</p></article><article><p>name: Elm Scarf</p><p>price: $16</p></article></body></html>",
+  "fields": [
+    "name",
+    "price"
+  ],
+  "expected": [
+    {
+      "name": "Spruce Jacket",
+      "price": "$73"
+    },
+    {
+      "name": "Elm Scarf",
+      "price": "$16"
+    }
+  ],
+  "task": "Extract products with name and price; preserve the association between fields."
+}

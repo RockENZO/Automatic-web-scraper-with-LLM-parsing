@@ -1,0 +1,22 @@
+{
+  "id": "table_inventory",
+  "html": "<html><body><table><tr><th>name</th><th>quantity</th><th>price</th></tr><tr><td>Blue Pen</td><td>7</td><td>$2</td></tr><tr><td>Red Pen</td><td>3</td><td>$4</td></tr></table></body></html>",
+  "fields": [
+    "name",
+    "quantity",
+    "price"
+  ],
+  "expected": [
+    {
+      "name": "Blue Pen",
+      "quantity": "7",
+      "price": "$2"
+    },
+    {
+      "name": "Red Pen",
+      "quantity": "3",
+      "price": "$4"
+    }
+  ],
+  "task": "Extract each inventory item with name, quantity and price."
+}

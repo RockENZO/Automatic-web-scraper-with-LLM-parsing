@@ -1,0 +1,1225 @@
+{
+  "protocol": "all predefined synthetic regression fixtures; same real model and character budget; alternating variant order; one frozen run without result-driven tuning",
+  "model": {
+    "name": "qwen3.8:27b-mlx",
+    "model": "qwen3.8:27b-mlx",
+    "modified_at": "2026-08-15T11:20:12.835336145+09:30",
+    "size": 18174721847,
+    "digest": "5642e97495e1a088883805981563dcdc4a040c2f53388b7a41d1f24d3622cf7e",
+    "details": {
+      "parent_model": "",
+      "format": "safetensors",
+      "family": "",
+      "families": null,
+      "parameter_size": "",
+      "quantization_level": "nvfp4"
+    },
+    "capabilities": [
+      "completion",
+      "vision",
+      "tools",
+      "thinking"
+    ]
+  },
+  "runtime": {
+    "python": "3.12.13",
+    "platform": "macOS-27.2-arm64-arm-64bit",
+    "beautifulsoup4": "4.15.0"
+  },
+  "chunk_budget": 1400,
+  "fixture_manifest_sha256": "92f1ad8c3d42faa375b33c3cccccc2a7e441c1cd0a7eb2cfcdc70fbd09795f68",
+  "fixture_hashes": {
+    "product_cards": "2e218b2fc25943cd7207dd0377e55d5f070293dfd06ea75cad20b342626a94cb",
+    "table_inventory": "5b4baa564f2f17a72824275a5bd0ea3f25eed9cad5b1bfb4899d1c0368f828e2",
+    "contact_footer": "1c73a08746b72db0bf5c98f8ed855bd893cef043e4fc49f803f1de357f875261",
+    "hidden_prices": "e41691ff19680326058f2deb2c38beda2639b6b45f66e5530572080989418f58",
+    "short_values": "64c1404e4398844424bf5de840461d3f209bdc1b690ed41f4255b016c2d76e47",
+    "missing_field": "009827cbc2b764a85309f8c99c8af7431ad63fd534dcc4df0a2048aecf3a710f",
+    "unicode_products": "ad17408f79112eee87c0bc2062c36399f404dd98e6b776e89ecce377a9e92de5",
+    "duplicate_cards": "1c94f04502418b260149e7e76172eac650f698f85cc8ca1b9af7da2f4a7de3c9",
+    "no_matches": "7fc92d0c874185d8131881d4123067353114c8aa3dfa65f61eebcd48e3e7ab02",
+    "script_noise": "0f5c2095fd9a64cde119fc5ec4d904e3fb2a6a775ad6a95f8e163196ccfa93ef",
+    "page_instructions": "19b3f7144b88b086949a1ef9a839bcd7b99f048383f674a0d2f5c462cb5ab71b",
+    "boundary_record": "e0a17fc4415b3e8b23f1cdc39c0d8cb821a595d80aaf707ea4fb300c0a9beb51",
+    "event_table": "eb8ccb1ffe95a3a995960c2c4a520df75c66103ce41a6011edbb334d15e3b723",
+    "header_contact": "c593c17279f6557691b307ec40ea4fa3b759027f35b6f711ab8b191cabfdf8c8",
+    "phone_records": "1f494bebe89603418323d4146b281a31dfc97d3488b09f360c130a2dd10d4398",
+    "row_headers": "391fbc2a0164f2eb0dbca238e5edabbba92c2aa35bd29a6aaa78470de8d480a9"
+  },
+  "code_hashes": {
+    "parse.py": "dbc46aab55e81161dc3c39d1cc8f1b6393b6985269643d60799f17a7688389c2",
+    "content.py": "c315ff3cb9f551ebcaf1c20b8a30d0c0718c27ac62b5d9e95308508b932c78bf",
+    "structured_content.py": "131cd67b9b2abd8494d1001117bfaf515c5ef88a3bb088187fd4fd2b1e349d7e",
+    "structured_parse.py": "bf4e8b07fe5e93e26620829d354041ebca493d4bade527192d5deb5de0f95a45",
+    "ollama_client.py": "cdcdf6fd039f32f1ca188e5cf8f041d76361a81f9b7fbe75df57d6a38124baef",
+    "evaluation/benchmark.py": "36cfe81e94e86bc8c17163475cdf96b2dc1b63bfad26236f863e997b2326ea30"
+  },
+  "metrics_definitions": {
+    "record": "micro multiset exact match over all requested fields, including nulls",
+    "field": "micro multiset exact match of (first-field record identity, field name, verbatim nonnull value)",
+    "unsupported_value": "nonnull output value absent from visible canonical source text; lexical grounding only, not semantic truth or instruction immunity",
+    "latency": "whole extraction wall time per case including retries and generation; excludes browser retrieval; one run, not a production throughput benchmark"
+  },
+  "aggregate": {
+    "legacy": {
+      "records": {
+        "tp": 16,
+        "predicted": 20,
+        "expected": 24,
+        "precision": 0.8,
+        "recall": 0.6666666666666666,
+        "f1": 0.7272727272727272
+      },
+      "fields": {
+        "tp": 35,
+        "predicted": 39,
+        "expected": 51,
+        "precision": 0.8974358974358975,
+        "recall": 0.6862745098039216,
+        "f1": 0.7777777777777778
+      },
+      "unsupported_values": 4,
+      "predicted_nonnull_values": 39,
+      "unsupported_value_rate": 0.10256410256410256,
+      "total_seconds": 147.75455200078432,
+      "model_calls": 17,
+      "failed_cases": 1,
+      "partial_cases": 0,
+      "no_match_case_correct": true
+    },
+    "structured": {
+      "records": {
+        "tp": 21,
+        "predicted": 21,
+        "expected": 24,
+        "precision": 1.0,
+        "recall": 0.875,
+        "f1": 0.9333333333333333
+      },
+      "fields": {
+        "tp": 45,
+        "predicted": 45,
+        "expected": 51,
+        "precision": 1.0,
+        "recall": 0.8823529411764706,
+        "f1": 0.9375
+      },
+      "unsupported_values": 0,
+      "predicted_nonnull_values": 45,
+      "unsupported_value_rate": 0.0,
+      "total_seconds": 248.25291566713713,
+      "model_calls": 20,
+      "failed_cases": 2,
+      "partial_cases": 0,
+      "no_match_case_correct": true
+    }
+  },
+  "cases": [
+    {
+      "case": "product_cards",
+      "variant": "legacy",
+      "status": "success",
+      "seconds": 6.492999667068943,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "Atlas Lamp",
+          "price": "$24.50"
+        },
+        {
+          "name": "Birch Chair",
+          "price": "$89.00"
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "fields": {
+          "tp": 4,
+          "predicted": 4,
+          "expected": 4
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 4
+      },
+      "calls": 1
+    },
+    {
+      "case": "product_cards",
+      "variant": "structured",
+      "status": "success",
+      "seconds": 26.20177662500646,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "Atlas Lamp",
+          "price": "$24.50"
+        },
+        {
+          "name": "Birch Chair",
+          "price": "$89.00"
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "fields": {
+          "tp": 4,
+          "predicted": 4,
+          "expected": 4
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 4
+      },
+      "calls": 1
+    },
+    {
+      "case": "table_inventory",
+      "variant": "structured",
+      "status": "success",
+      "seconds": 18.22191516601015,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "Blue Pen",
+          "quantity": "7",
+          "price": "$2"
+        },
+        {
+          "name": "Red Pen",
+          "quantity": "3",
+          "price": "$4"
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "fields": {
+          "tp": 6,
+          "predicted": 6,
+          "expected": 6
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 6
+      },
+      "calls": 1
+    },
+    {
+      "case": "table_inventory",
+      "variant": "legacy",
+      "status": "success",
+      "seconds": 9.22076633409597,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "Blue Pen",
+          "quantity": null,
+          "price": null
+        },
+        {
+          "name": "Red Pen",
+          "quantity": null,
+          "price": null
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 0,
+          "predicted": 2,
+          "expected": 2
+        },
+        "fields": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 6
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 2
+      },
+      "calls": 1
+    },
+    {
+      "case": "contact_footer",
+      "variant": "legacy",
+      "status": "empty",
+      "seconds": 3.717450500000268,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [],
+      "metrics": {
+        "records": {
+          "tp": 0,
+          "predicted": 0,
+          "expected": 1
+        },
+        "fields": {
+          "tp": 0,
+          "predicted": 0,
+          "expected": 2
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 0
+      },
+      "calls": 1
+    },
+    {
+      "case": "contact_footer",
+      "variant": "structured",
+      "status": "success",
+      "seconds": 10.587715625064448,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "Ada Reed",
+          "email": "ada@example.test"
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 1,
+          "predicted": 1,
+          "expected": 1
+        },
+        "fields": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 2
+      },
+      "calls": 1
+    },
+    {
+      "case": "hidden_prices",
+      "variant": "structured",
+      "status": "success",
+      "seconds": 8.946137999999337,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "Oak Coat",
+          "price": "$52"
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 1,
+          "predicted": 1,
+          "expected": 1
+        },
+        "fields": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 2
+      },
+      "calls": 1
+    },
+    {
+      "case": "hidden_prices",
+      "variant": "legacy",
+      "status": "success",
+      "seconds": 7.689830207964405,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "Fake Coat",
+          "price": "$1"
+        },
+        {
+          "name": "Oak Coat",
+          "price": "$52"
+        },
+        {
+          "name": "Ghost Coat",
+          "price": "$0"
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 1,
+          "predicted": 3,
+          "expected": 1
+        },
+        "fields": {
+          "tp": 2,
+          "predicted": 6,
+          "expected": 2
+        },
+        "unsupported_values": 4,
+        "predicted_nonnull_values": 6
+      },
+      "calls": 1
+    },
+    {
+      "case": "short_values",
+      "variant": "legacy",
+      "status": "empty",
+      "seconds": 10.056384333991446,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [],
+      "metrics": {
+        "records": {
+          "tp": 0,
+          "predicted": 0,
+          "expected": 2
+        },
+        "fields": {
+          "tp": 0,
+          "predicted": 0,
+          "expected": 4
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 0
+      },
+      "calls": 1
+    },
+    {
+      "case": "short_values",
+      "variant": "structured",
+      "status": "success",
+      "seconds": 12.058436040999368,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "A",
+          "quantity": "1"
+        },
+        {
+          "name": "B",
+          "quantity": "2"
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "fields": {
+          "tp": 4,
+          "predicted": 4,
+          "expected": 4
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 4
+      },
+      "calls": 1
+    },
+    {
+      "case": "missing_field",
+      "variant": "structured",
+      "status": "success",
+      "seconds": 13.473134167026728,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "Juniper Book",
+          "price": "$14"
+        },
+        {
+          "name": "Maple Book",
+          "price": null
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "fields": {
+          "tp": 3,
+          "predicted": 3,
+          "expected": 3
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 3
+      },
+      "calls": 1
+    },
+    {
+      "case": "missing_field",
+      "variant": "legacy",
+      "status": "success",
+      "seconds": 7.152796292095445,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "Juniper Book",
+          "price": "$14"
+        },
+        {
+          "name": "Maple Book",
+          "price": null
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "fields": {
+          "tp": 3,
+          "predicted": 3,
+          "expected": 3
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 3
+      },
+      "calls": 1
+    },
+    {
+      "case": "unicode_products",
+      "variant": "legacy",
+      "status": "success",
+      "seconds": 5.27729899995029,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "青瓷杯",
+          "price": "¥38"
+        },
+        {
+          "name": "Café Mug",
+          "price": "€12,50"
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "fields": {
+          "tp": 4,
+          "predicted": 4,
+          "expected": 4
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 4
+      },
+      "calls": 1
+    },
+    {
+      "case": "unicode_products",
+      "variant": "structured",
+      "status": "success",
+      "seconds": 12.737496417015791,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "青瓷杯",
+          "price": "¥38"
+        },
+        {
+          "name": "Café Mug",
+          "price": "€12,50"
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "fields": {
+          "tp": 4,
+          "predicted": 4,
+          "expected": 4
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 4
+      },
+      "calls": 1
+    },
+    {
+      "case": "duplicate_cards",
+      "variant": "structured",
+      "status": "success",
+      "seconds": 10.17065433296375,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "Cedar Desk",
+          "price": "$210"
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 1,
+          "predicted": 1,
+          "expected": 1
+        },
+        "fields": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 2
+      },
+      "calls": 1
+    },
+    {
+      "case": "duplicate_cards",
+      "variant": "legacy",
+      "status": "success",
+      "seconds": 6.927849749918096,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "Cedar Desk",
+          "price": "$210"
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 1,
+          "predicted": 1,
+          "expected": 1
+        },
+        "fields": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 2
+      },
+      "calls": 1
+    },
+    {
+      "case": "no_matches",
+      "variant": "legacy",
+      "status": "empty",
+      "seconds": 10.929870250052772,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [],
+      "metrics": {
+        "records": {
+          "tp": 0,
+          "predicted": 0,
+          "expected": 0
+        },
+        "fields": {
+          "tp": 0,
+          "predicted": 0,
+          "expected": 0
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 0
+      },
+      "calls": 1
+    },
+    {
+      "case": "no_matches",
+      "variant": "structured",
+      "status": "empty",
+      "seconds": 5.1283395839855075,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [],
+      "metrics": {
+        "records": {
+          "tp": 0,
+          "predicted": 0,
+          "expected": 0
+        },
+        "fields": {
+          "tp": 0,
+          "predicted": 0,
+          "expected": 0
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 0
+      },
+      "calls": 1
+    },
+    {
+      "case": "script_noise",
+      "variant": "structured",
+      "status": "failed",
+      "seconds": 15.400301583111286,
+      "total_chunks": 1,
+      "completed_chunks": 0,
+      "failed_chunks": [
+        1
+      ],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [],
+      "metrics": {
+        "records": {
+          "tp": 0,
+          "predicted": 0,
+          "expected": 1
+        },
+        "fields": {
+          "tp": 0,
+          "predicted": 0,
+          "expected": 2
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 0
+      },
+      "calls": 2
+    },
+    {
+      "case": "script_noise",
+      "variant": "legacy",
+      "status": "success",
+      "seconds": 4.248783665942028,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "Pine Table",
+          "price": "$99"
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 1,
+          "predicted": 1,
+          "expected": 1
+        },
+        "fields": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 2
+      },
+      "calls": 1
+    },
+    {
+      "case": "page_instructions",
+      "variant": "legacy",
+      "status": "success",
+      "seconds": 7.389540582895279,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "Willow Shelf",
+          "price": "$31"
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 1,
+          "predicted": 1,
+          "expected": 1
+        },
+        "fields": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 2
+      },
+      "calls": 1
+    },
+    {
+      "case": "page_instructions",
+      "variant": "structured",
+      "status": "success",
+      "seconds": 20.912581708980724,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "Willow Shelf",
+          "price": "$31"
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 1,
+          "predicted": 1,
+          "expected": 1
+        },
+        "fields": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 2
+      },
+      "calls": 2
+    },
+    {
+      "case": "boundary_record",
+      "variant": "structured",
+      "status": "success",
+      "seconds": 23.919799332972616,
+      "total_chunks": 2,
+      "completed_chunks": 2,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "Spruce Jacket",
+          "price": "$73"
+        },
+        {
+          "name": "Elm Scarf",
+          "price": "$16"
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "fields": {
+          "tp": 4,
+          "predicted": 4,
+          "expected": 4
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 4
+      },
+      "calls": 2
+    },
+    {
+      "case": "boundary_record",
+      "variant": "legacy",
+      "status": "failed",
+      "seconds": 43.91391012491658,
+      "total_chunks": 2,
+      "completed_chunks": 0,
+      "failed_chunks": [
+        1,
+        2
+      ],
+      "decode_error": "Expecting value: line 1 column 1 (char 0)",
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [],
+      "metrics": {
+        "records": {
+          "tp": 0,
+          "predicted": 0,
+          "expected": 2
+        },
+        "fields": {
+          "tp": 0,
+          "predicted": 0,
+          "expected": 4
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 0
+      },
+      "calls": 2
+    },
+    {
+      "case": "event_table",
+      "variant": "legacy",
+      "status": "success",
+      "seconds": 8.252923999913037,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "River Expo",
+          "date": "2026-10-14",
+          "venue": "North Hall"
+        },
+        {
+          "name": "Garden Fair",
+          "date": "2026-11-02",
+          "venue": "West Park"
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "fields": {
+          "tp": 6,
+          "predicted": 6,
+          "expected": 6
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 6
+      },
+      "calls": 1
+    },
+    {
+      "case": "event_table",
+      "variant": "structured",
+      "status": "success",
+      "seconds": 20.150036667007953,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "River Expo",
+          "date": "2026-10-14",
+          "venue": "North Hall"
+        },
+        {
+          "name": "Garden Fair",
+          "date": "2026-11-02",
+          "venue": "West Park"
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "fields": {
+          "tp": 6,
+          "predicted": 6,
+          "expected": 6
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 6
+      },
+      "calls": 1
+    },
+    {
+      "case": "header_contact",
+      "variant": "structured",
+      "status": "success",
+      "seconds": 9.532324417028576,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "Mira Lake",
+          "email": "mira@example.test"
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 1,
+          "predicted": 1,
+          "expected": 1
+        },
+        "fields": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 2
+      },
+      "calls": 1
+    },
+    {
+      "case": "header_contact",
+      "variant": "legacy",
+      "status": "empty",
+      "seconds": 3.9780616250354797,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [],
+      "metrics": {
+        "records": {
+          "tp": 0,
+          "predicted": 0,
+          "expected": 1
+        },
+        "fields": {
+          "tp": 0,
+          "predicted": 0,
+          "expected": 2
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 0
+      },
+      "calls": 1
+    },
+    {
+      "case": "phone_records",
+      "variant": "legacy",
+      "status": "success",
+      "seconds": 7.14967983297538,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "Theo Moss",
+          "phone": "+61 8 5550 0101"
+        },
+        {
+          "name": "Iris Vale",
+          "phone": "+61 8 5550 0102"
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "fields": {
+          "tp": 4,
+          "predicted": 4,
+          "expected": 4
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 4
+      },
+      "calls": 1
+    },
+    {
+      "case": "phone_records",
+      "variant": "structured",
+      "status": "success",
+      "seconds": 19.30207845789846,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "Theo Moss",
+          "phone": "+61 8 5550 0101"
+        },
+        {
+          "name": "Iris Vale",
+          "phone": "+61 8 5550 0102"
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "fields": {
+          "tp": 4,
+          "predicted": 4,
+          "expected": 4
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 4
+      },
+      "calls": 1
+    },
+    {
+      "case": "row_headers",
+      "variant": "structured",
+      "status": "failed",
+      "seconds": 21.510187542065978,
+      "total_chunks": 1,
+      "completed_chunks": 0,
+      "failed_chunks": [
+        1
+      ],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [],
+      "metrics": {
+        "records": {
+          "tp": 0,
+          "predicted": 0,
+          "expected": 2
+        },
+        "fields": {
+          "tp": 0,
+          "predicted": 0,
+          "expected": 4
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 0
+      },
+      "calls": 2
+    },
+    {
+      "case": "row_headers",
+      "variant": "legacy",
+      "status": "success",
+      "seconds": 5.356405833968893,
+      "total_chunks": 1,
+      "completed_chunks": 1,
+      "failed_chunks": [],
+      "decode_error": null,
+      "rejected_records": [],
+      "deduplicated_records": 0,
+      "predictions": [
+        {
+          "name": "Acacia Bowl",
+          "price": "$18"
+        },
+        {
+          "name": "Ash Plate",
+          "price": "$22"
+        }
+      ],
+      "metrics": {
+        "records": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "fields": {
+          "tp": 4,
+          "predicted": 4,
+          "expected": 4
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 4
+      },
+      "calls": 1
+    }
+  ],
+  "limitations": [
+    "16 synthetic hand-specified fixtures; not a representative sample of live websites.",
+    "Grounding checks source presence, not correct field semantics or resistance to all prompt injections.",
+    "No OCR, pagination, CAPTCHA or live browser reliability measured.",
+    "Results apply only to this installed model/runtime; default gpt-oss and fallback models were not evaluated."
+  ],
+  "raw_responses_sha256": "cc4ff8dae2c3a9146fcd6d88f166227c423ed5f351f5e13afd0ff397f3d45360"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "missing_field",
+  "html": "<html><body><article><h2>Juniper Book</h2><p>Price: $14</p></article><article><h2>Maple Book</h2><p>Price unavailable</p></article></body></html>",
+  "fields": [
+    "name",
+    "price"
+  ],
+  "expected": [
+    {
+      "name": "Juniper Book",
+      "price": "$14"
+    },
+    {
+      "name": "Maple Book",
+      "price": null
+    }
+  ],
+  "task": "Extract each book name and price; use null when no price is stated."
+}

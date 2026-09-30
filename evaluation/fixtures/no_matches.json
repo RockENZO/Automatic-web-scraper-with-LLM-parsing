@@ -1,0 +1,10 @@
+{
+  "id": "no_matches",
+  "html": "<html><body><h1>About this site</h1><p>We publish stories about mountain trails. There are no contact details here.</p></body></html>",
+  "fields": [
+    "name",
+    "email"
+  ],
+  "expected": [],
+  "task": "Extract contact name and email only; return no records when no contacts exist."
+}

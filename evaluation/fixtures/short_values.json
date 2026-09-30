@@ -1,0 +1,19 @@
+{
+  "id": "short_values",
+  "html": "<html><body><table><tr><th>name</th><th>quantity</th></tr><tr><td>A</td><td>1</td></tr><tr><td>B</td><td>2</td></tr></table></body></html>",
+  "fields": [
+    "name",
+    "quantity"
+  ],
+  "expected": [
+    {
+      "name": "A",
+      "quantity": "1"
+    },
+    {
+      "name": "B",
+      "quantity": "2"
+    }
+  ],
+  "task": "Extract inventory name and quantity, including one-character values."
+}

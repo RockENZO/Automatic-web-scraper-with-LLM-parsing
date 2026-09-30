@@ -1,0 +1,19 @@
+{
+  "id": "row_headers",
+  "html": "<html><body><table><tr><th>name</th><th>price</th></tr><tr><th scope=\"row\">Acacia Bowl</th><td>$18</td></tr><tr><th scope=\"row\">Ash Plate</th><td>$22</td></tr></table></body></html>",
+  "fields": [
+    "name",
+    "price"
+  ],
+  "expected": [
+    {
+      "name": "Acacia Bowl",
+      "price": "$18"
+    },
+    {
+      "name": "Ash Plate",
+      "price": "$22"
+    }
+  ],
+  "task": "Extract each item name and price."
+}

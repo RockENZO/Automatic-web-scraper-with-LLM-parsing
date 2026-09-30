@@ -1,0 +1,15 @@
+{
+  "id": "header_contact",
+  "html": "<html><body><header><address><p>name: Mira Lake</p><p>email: mira@example.test</p></address></header><main><p>Welcome to our consulting office.</p></main></body></html>",
+  "fields": [
+    "name",
+    "email"
+  ],
+  "expected": [
+    {
+      "name": "Mira Lake",
+      "email": "mira@example.test"
+    }
+  ],
+  "task": "Extract contact name and email, including header contact details."
+}

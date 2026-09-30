@@ -1,0 +1,19 @@
+{
+  "id": "unicode_products",
+  "html": "<html><body><article><p>name: 青瓷杯</p><p>price: ¥38</p></article><article><p>name: Café Mug</p><p>price: €12,50</p></article></body></html>",
+  "fields": [
+    "name",
+    "price"
+  ],
+  "expected": [
+    {
+      "name": "青瓷杯",
+      "price": "¥38"
+    },
+    {
+      "name": "Café Mug",
+      "price": "€12,50"
+    }
+  ],
+  "task": "Extract product names and prices verbatim without translation."
+}

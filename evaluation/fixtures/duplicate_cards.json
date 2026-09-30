@@ -1,0 +1,15 @@
+{
+  "id": "duplicate_cards",
+  "html": "<html><body><article><p>name: Cedar Desk</p><p>price: $210</p></article><article><p>name: Cedar Desk</p><p>price: $210</p></article><article><p>name: Cedar Desk</p><p>price: $210</p></article></body></html>",
+  "fields": [
+    "name",
+    "price"
+  ],
+  "expected": [
+    {
+      "name": "Cedar Desk",
+      "price": "$210"
+    }
+  ],
+  "task": "Extract unique products with name and price; remove exact duplicate records."
+}

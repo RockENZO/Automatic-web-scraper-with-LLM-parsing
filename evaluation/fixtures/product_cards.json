@@ -1,0 +1,19 @@
+{
+  "id": "product_cards",
+  "html": "<html><body><article><h2>Atlas Lamp</h2><p>Price: $24.50</p></article><article><h2>Birch Chair</h2><p>Price: $89.00</p></article></body></html>",
+  "fields": [
+    "name",
+    "price"
+  ],
+  "expected": [
+    {
+      "name": "Atlas Lamp",
+      "price": "$24.50"
+    },
+    {
+      "name": "Birch Chair",
+      "price": "$89.00"
+    }
+  ],
+  "task": "Extract products with name and price."
+}

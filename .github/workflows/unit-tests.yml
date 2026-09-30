@@ -15,5 +15,5 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: python -m pip install beautifulsoup4
+      - run: python -m pip install -r requirements-benchmark.txt streamlit==1.55.0
       - run: python -m unittest discover -s tests -p 'test_*.py'

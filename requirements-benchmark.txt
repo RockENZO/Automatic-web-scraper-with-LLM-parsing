@@ -1,0 +1,2 @@
+# Reproduces the HTML parser used by the real-model fixture benchmark.
+beautifulsoup4==4.15.0
