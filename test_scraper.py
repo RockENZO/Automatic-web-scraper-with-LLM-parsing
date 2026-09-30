@@ -42,8 +42,11 @@ def test_scraper():
         test_description = "Extract the main heading or title of the page"
         try:
             parsed_result = parse_with_ollama([cleaned_content[:2000]], test_description)
-            print(f"   ✅ AI parsing successful")
-            print(f"   📄 Result: {parsed_result[:100]}...")
+            if parsed_result.status in ('failed', 'partial'):
+                print(f"   AI extraction incomplete: {parsed_result.status}; failed chunks {parsed_result.failed_chunks}")
+                return False
+            print(f"   AI extraction outcome: {parsed_result.status}")
+            print(f"   Result: {parsed_result.text[:100]}...")
         except Exception as e:
             print(f"   ⚠️ AI parsing failed (Ollama might not be running): {e}")
             return False
