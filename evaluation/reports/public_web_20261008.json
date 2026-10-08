@@ -1,0 +1,1345 @@
+{
+  "status": "experimental",
+  "date": "2026-10-08",
+  "scope": "Six public scraping-practice pages, three hosts; narrow predefined record regions. Not representative production websites.",
+  "frozen_manifest_sha256": "5b9439c0df71904a0b3abca9f7d1e181e0bb90f64dc8e370b382e5df6a4a484a",
+  "model": {
+    "name": "qwen3.8:27b-mlx",
+    "model": "qwen3.8:27b-mlx",
+    "modified_at": "2026-08-15T11:20:12.835336145+09:30",
+    "size": 18174721847,
+    "digest": "5642e97495e1a088883805981563dcdc4a040c2f53388b7a41d1f24d3622cf7e",
+    "details": {
+      "parent_model": "",
+      "format": "safetensors",
+      "family": "",
+      "families": null,
+      "parameter_size": "",
+      "quantization_level": "nvfp4",
+      "runner": "mlx"
+    },
+    "capabilities": [
+      "completion",
+      "vision",
+      "tools",
+      "thinking"
+    ]
+  },
+  "runtime": {
+    "python": "3.12.13",
+    "platform": "macOS-27.2-arm64-arm-64bit",
+    "packages": {
+      "selenium": "4.50.0",
+      "beautifulsoup4": "4.15.0",
+      "streamlit": "1.55.0"
+    }
+  },
+  "code_sha256": {
+    "scrape.py": "508ca268a1163165882d28521e5cf58c70b097b091dfe6f9f68f982c55365e58",
+    "structured_content.py": "131cd67b9b2abd8494d1001117bfaf515c5ef88a3bb088187fd4fd2b1e349d7e",
+    "structured_parse.py": "bf4e8b07fe5e93e26620829d354041ebca493d4bade527192d5deb5de0f95a45",
+    "ollama_client.py": "cdcdf6fd039f32f1ca188e5cf8f041d76361a81f9b7fbe75df57d6a38124baef",
+    "evaluation/public_benchmark.py": "53b8902bb9a01250928402571087c5859d2c743f4a0af99e3f37ed2a0c6de295"
+  },
+  "aggregate": {
+    "frozen": {
+      "fields": {
+        "tp": 12,
+        "predicted": 20,
+        "expected": 20,
+        "precision": 0.6,
+        "recall": 0.6,
+        "f1": 0.6
+      },
+      "records": {
+        "tp": 6,
+        "predicted": 10,
+        "expected": 10,
+        "precision": 0.6,
+        "recall": 0.6,
+        "f1": 0.6
+      },
+      "cases": 6,
+      "scored_cases": 6,
+      "failed_cases": 0,
+      "total_seconds": 116.81800091602781,
+      "source_presence_failures": 0
+    },
+    "live": {
+      "fields": {
+        "tp": 12,
+        "predicted": 20,
+        "expected": 20,
+        "precision": 0.6,
+        "recall": 0.6,
+        "f1": 0.6
+      },
+      "records": {
+        "tp": 6,
+        "predicted": 10,
+        "expected": 10,
+        "precision": 0.6,
+        "recall": 0.6,
+        "f1": 0.6
+      },
+      "cases": 6,
+      "scored_cases": 6,
+      "failed_cases": 0,
+      "total_seconds": 133.14770424999006,
+      "source_presence_failures": 0,
+      "capture_success_rate": 1.0
+    }
+  },
+  "cases": [
+    {
+      "case_id": "book_attic",
+      "variant": "frozen",
+      "status": "success",
+      "error": null,
+      "reference_changed": false,
+      "scores": {
+        "records": {
+          "tp": 1,
+          "predicted": 1,
+          "expected": 1
+        },
+        "fields": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 2
+      },
+      "result": {
+        "status": "success",
+        "records": [
+          {
+            "values": {
+              "name": "A Light in the Attic",
+              "price": "£51.77"
+            },
+            "evidence": {
+              "name": {
+                "block_id": "b0001",
+                "quote": "A Light in the Attic"
+              },
+              "price": {
+                "block_id": "b0001",
+                "quote": "£51.77"
+              }
+            },
+            "evidence_sets": [
+              {
+                "name": {
+                  "block_id": "b0001",
+                  "quote": "A Light in the Attic"
+                },
+                "price": {
+                  "block_id": "b0001",
+                  "quote": "£51.77"
+                }
+              }
+            ]
+          }
+        ],
+        "total_chunks": 1,
+        "completed_chunks": 1,
+        "failed_chunks": [],
+        "rejected_records": [],
+        "models_used": [
+          "qwen3.8:27b-mlx"
+        ],
+        "duplicate_records": 0
+      },
+      "capture": null,
+      "model_traces": [
+        {
+          "model": "qwen3.8:27b-mlx",
+          "prompt_sha256": "03e8e0237697c5a721b62903bfbf5fbe7fb7e6424aa08b18dfb9c2b7cb8274e6",
+          "structured_format": true,
+          "response": "{\"records\":[{\"values\":{\"name\":\"A Light in the Attic\",\"price\":\"£51.77\"},\"evidence\":{\"name\":{\"block_id\":\"b0001\",\"quote\":\"A Light in the Attic\"},\"price\":{\"block_id\":\"b0001\",\"quote\":\"£51.77\"}}}]}",
+          "seconds": 21.25482341699535
+        }
+      ],
+      "seconds": 21.255976000000373
+    },
+    {
+      "case_id": "book_attic",
+      "variant": "live",
+      "status": "success",
+      "error": null,
+      "reference_changed": false,
+      "scores": {
+        "records": {
+          "tp": 1,
+          "predicted": 1,
+          "expected": 1
+        },
+        "fields": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 2
+      },
+      "result": {
+        "status": "success",
+        "records": [
+          {
+            "values": {
+              "name": "A Light in the Attic",
+              "price": "£51.77"
+            },
+            "evidence": {
+              "name": {
+                "block_id": "b0001",
+                "quote": "A Light in the Attic"
+              },
+              "price": {
+                "block_id": "b0001",
+                "quote": "£51.77"
+              }
+            },
+            "evidence_sets": [
+              {
+                "name": {
+                  "block_id": "b0001",
+                  "quote": "A Light in the Attic"
+                },
+                "price": {
+                  "block_id": "b0001",
+                  "quote": "£51.77"
+                }
+              }
+            ]
+          }
+        ],
+        "total_chunks": 1,
+        "completed_chunks": 1,
+        "failed_chunks": [],
+        "rejected_records": [],
+        "models_used": [
+          "qwen3.8:27b-mlx"
+        ],
+        "duplicate_records": 0
+      },
+      "capture": {
+        "status": "success",
+        "requested_url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+        "final_url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+        "error_code": null,
+        "elapsed_seconds": 3.7490034160000505,
+        "attempts": [
+          {
+            "attempt": 1,
+            "status": "success",
+            "error_code": null,
+            "artifacts": {
+              "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/book_attic/attempt-1/page.html",
+              "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/book_attic/attempt-1/page.png"
+            }
+          }
+        ],
+        "artifacts": {
+          "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/book_attic/attempt-1/page.html",
+          "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/book_attic/attempt-1/page.png"
+        },
+        "browser_version": "154.0.8037.97",
+        "html_sha256": "e1e514cc328f0fada102edf872172160ee0346fb04d372b93d2bf8f71eaa004f",
+        "html_characters": 9018
+      },
+      "model_traces": [
+        {
+          "model": "qwen3.8:27b-mlx",
+          "prompt_sha256": "03e8e0237697c5a721b62903bfbf5fbe7fb7e6424aa08b18dfb9c2b7cb8274e6",
+          "structured_format": true,
+          "response": "{\"records\":[{\"values\":{\"name\":\"A Light in the Attic\",\"price\":\"£51.77\"},\"evidence\":{\"name\":{\"block_id\":\"b0001\",\"quote\":\"A Light in the Attic\"},\"price\":{\"block_id\":\"b0001\",\"quote\":\"£51.77\"}}}]}",
+          "seconds": 12.437398875001236
+        }
+      ],
+      "seconds": 16.200723166999524
+    },
+    {
+      "case_id": "book_velvet",
+      "variant": "live",
+      "status": "success",
+      "error": null,
+      "reference_changed": false,
+      "scores": {
+        "records": {
+          "tp": 1,
+          "predicted": 1,
+          "expected": 1
+        },
+        "fields": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 2
+      },
+      "result": {
+        "status": "success",
+        "records": [
+          {
+            "values": {
+              "name": "Tipping the Velvet",
+              "price": "£53.74"
+            },
+            "evidence": {
+              "name": {
+                "block_id": "b0001",
+                "quote": "Tipping the Velvet"
+              },
+              "price": {
+                "block_id": "b0001",
+                "quote": "£53.74"
+              }
+            },
+            "evidence_sets": [
+              {
+                "name": {
+                  "block_id": "b0001",
+                  "quote": "Tipping the Velvet"
+                },
+                "price": {
+                  "block_id": "b0001",
+                  "quote": "£53.74"
+                }
+              }
+            ]
+          }
+        ],
+        "total_chunks": 1,
+        "completed_chunks": 1,
+        "failed_chunks": [],
+        "rejected_records": [],
+        "models_used": [
+          "qwen3.8:27b-mlx"
+        ],
+        "duplicate_records": 0
+      },
+      "capture": {
+        "status": "success",
+        "requested_url": "https://books.toscrape.com/catalogue/tipping-the-velvet_999/index.html",
+        "final_url": "https://books.toscrape.com/catalogue/tipping-the-velvet_999/index.html",
+        "error_code": null,
+        "elapsed_seconds": 3.742971750005381,
+        "attempts": [
+          {
+            "attempt": 1,
+            "status": "success",
+            "error_code": null,
+            "artifacts": {
+              "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/book_velvet/attempt-1/page.html",
+              "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/book_velvet/attempt-1/page.png"
+            }
+          }
+        ],
+        "artifacts": {
+          "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/book_velvet/attempt-1/page.html",
+          "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/book_velvet/attempt-1/page.png"
+        },
+        "browser_version": "154.0.8037.97",
+        "html_sha256": "5a60b32e717f504742c30fb65b62cf9f44b280cab49c9e0bd7f1259e12234135",
+        "html_characters": 10672
+      },
+      "model_traces": [
+        {
+          "model": "qwen3.8:27b-mlx",
+          "prompt_sha256": "95010bb1437cb0f0c4a4b1a9a1d8d2833f0d6b4afc8eba86dc5168ef0263e0e1",
+          "structured_format": true,
+          "response": "{\"records\":[{\"values\":{\"name\":\"Tipping the Velvet\",\"price\":\"£53.74\"},\"evidence\":{\"name\":{\"block_id\":\"b0001\",\"quote\":\"Tipping the Velvet\"},\"price\":{\"block_id\":\"b0001\",\"quote\":\"£53.74\"}}}]}",
+          "seconds": 13.546634334008559
+        }
+      ],
+      "seconds": 17.298278665999533
+    },
+    {
+      "case_id": "book_velvet",
+      "variant": "frozen",
+      "status": "success",
+      "error": null,
+      "reference_changed": false,
+      "scores": {
+        "records": {
+          "tp": 1,
+          "predicted": 1,
+          "expected": 1
+        },
+        "fields": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 2
+      },
+      "result": {
+        "status": "success",
+        "records": [
+          {
+            "values": {
+              "name": "Tipping the Velvet",
+              "price": "£53.74"
+            },
+            "evidence": {
+              "name": {
+                "block_id": "b0001",
+                "quote": "Tipping the Velvet"
+              },
+              "price": {
+                "block_id": "b0001",
+                "quote": "£53.74"
+              }
+            },
+            "evidence_sets": [
+              {
+                "name": {
+                  "block_id": "b0001",
+                  "quote": "Tipping the Velvet"
+                },
+                "price": {
+                  "block_id": "b0001",
+                  "quote": "£53.74"
+                }
+              }
+            ]
+          }
+        ],
+        "total_chunks": 1,
+        "completed_chunks": 1,
+        "failed_chunks": [],
+        "rejected_records": [],
+        "models_used": [
+          "qwen3.8:27b-mlx"
+        ],
+        "duplicate_records": 0
+      },
+      "capture": null,
+      "model_traces": [
+        {
+          "model": "qwen3.8:27b-mlx",
+          "prompt_sha256": "95010bb1437cb0f0c4a4b1a9a1d8d2833f0d6b4afc8eba86dc5168ef0263e0e1",
+          "structured_format": true,
+          "response": "{\"records\":[{\"values\":{\"name\":\"Tipping the Velvet\",\"price\":\"£53.74\"},\"evidence\":{\"name\":{\"block_id\":\"b0001\",\"quote\":\"Tipping the Velvet\"},\"price\":{\"block_id\":\"b0001\",\"quote\":\"£53.74\"}}}]}",
+          "seconds": 11.436794041990652
+        }
+      ],
+      "seconds": 11.439246792011545
+    },
+    {
+      "case_id": "book_soumission",
+      "variant": "frozen",
+      "status": "success",
+      "error": null,
+      "reference_changed": false,
+      "scores": {
+        "records": {
+          "tp": 1,
+          "predicted": 1,
+          "expected": 1
+        },
+        "fields": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 2
+      },
+      "result": {
+        "status": "success",
+        "records": [
+          {
+            "values": {
+              "name": "Soumission",
+              "price": "£50.10"
+            },
+            "evidence": {
+              "name": {
+                "block_id": "b0001",
+                "quote": "Soumission"
+              },
+              "price": {
+                "block_id": "b0001",
+                "quote": "£50.10"
+              }
+            },
+            "evidence_sets": [
+              {
+                "name": {
+                  "block_id": "b0001",
+                  "quote": "Soumission"
+                },
+                "price": {
+                  "block_id": "b0001",
+                  "quote": "£50.10"
+                }
+              }
+            ]
+          }
+        ],
+        "total_chunks": 1,
+        "completed_chunks": 1,
+        "failed_chunks": [],
+        "rejected_records": [],
+        "models_used": [
+          "qwen3.8:27b-mlx"
+        ],
+        "duplicate_records": 0
+      },
+      "capture": null,
+      "model_traces": [
+        {
+          "model": "qwen3.8:27b-mlx",
+          "prompt_sha256": "5116ac40d91b2058684025f6f6d6194b33e2e4b7c6e4cb15b6d1434488b31d65",
+          "structured_format": true,
+          "response": "{\"records\":[{\"values\":{\"name\":\"Soumission\",\"price\":\"£50.10\"},\"evidence\":{\"name\":{\"block_id\":\"b0001\",\"quote\":\"Soumission\"},\"price\":{\"block_id\":\"b0001\",\"quote\":\"£50.10\"}}}]}",
+          "seconds": 12.994618249998894
+        }
+      ],
+      "seconds": 13.001190167007735
+    },
+    {
+      "case_id": "book_soumission",
+      "variant": "live",
+      "status": "success",
+      "error": null,
+      "reference_changed": false,
+      "scores": {
+        "records": {
+          "tp": 1,
+          "predicted": 1,
+          "expected": 1
+        },
+        "fields": {
+          "tp": 2,
+          "predicted": 2,
+          "expected": 2
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 2
+      },
+      "result": {
+        "status": "success",
+        "records": [
+          {
+            "values": {
+              "name": "Soumission",
+              "price": "£50.10"
+            },
+            "evidence": {
+              "name": {
+                "block_id": "b0001",
+                "quote": "Soumission"
+              },
+              "price": {
+                "block_id": "b0001",
+                "quote": "£50.10"
+              }
+            },
+            "evidence_sets": [
+              {
+                "name": {
+                  "block_id": "b0001",
+                  "quote": "Soumission"
+                },
+                "price": {
+                  "block_id": "b0001",
+                  "quote": "£50.10"
+                }
+              }
+            ]
+          }
+        ],
+        "total_chunks": 1,
+        "completed_chunks": 1,
+        "failed_chunks": [],
+        "rejected_records": [],
+        "models_used": [
+          "qwen3.8:27b-mlx"
+        ],
+        "duplicate_records": 0
+      },
+      "capture": {
+        "status": "success",
+        "requested_url": "https://books.toscrape.com/catalogue/soumission_998/index.html",
+        "final_url": "https://books.toscrape.com/catalogue/soumission_998/index.html",
+        "error_code": null,
+        "elapsed_seconds": 3.482616916997358,
+        "attempts": [
+          {
+            "attempt": 1,
+            "status": "success",
+            "error_code": null,
+            "artifacts": {
+              "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/book_soumission/attempt-1/page.html",
+              "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/book_soumission/attempt-1/page.png"
+            }
+          }
+        ],
+        "artifacts": {
+          "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/book_soumission/attempt-1/page.html",
+          "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/book_soumission/attempt-1/page.png"
+        },
+        "browser_version": "154.0.8037.97",
+        "html_sha256": "1bc277d8c2c502abb52f61a86b9c81d9c1e7cdf1c3eb3b3e4c50ded8adc62385",
+        "html_characters": 12106
+      },
+      "model_traces": [
+        {
+          "model": "qwen3.8:27b-mlx",
+          "prompt_sha256": "5116ac40d91b2058684025f6f6d6194b33e2e4b7c6e4cb15b6d1434488b31d65",
+          "structured_format": true,
+          "response": "{\"records\":[{\"values\":{\"name\":\"Soumission\",\"price\":\"£50.10\"},\"evidence\":{\"name\":{\"block_id\":\"b0001\",\"quote\":\"Soumission\"},\"price\":{\"block_id\":\"b0001\",\"quote\":\"£50.10\"}}}]}",
+          "seconds": 14.017536125000333
+        }
+      ],
+      "seconds": 17.504975374991773
+    },
+    {
+      "case_id": "quotes_static",
+      "variant": "live",
+      "status": "success",
+      "error": null,
+      "reference_changed": false,
+      "scores": {
+        "records": {
+          "tp": 0,
+          "predicted": 2,
+          "expected": 2
+        },
+        "fields": {
+          "tp": 0,
+          "predicted": 4,
+          "expected": 4
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 4
+      },
+      "result": {
+        "status": "success",
+        "records": [
+          {
+            "values": {
+              "quote": "The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.",
+              "author": "Albert Einstein"
+            },
+            "evidence": {
+              "quote": {
+                "block_id": "b0001",
+                "quote": "The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking."
+              },
+              "author": {
+                "block_id": "b0001",
+                "quote": "Albert Einstein"
+              }
+            },
+            "evidence_sets": [
+              {
+                "quote": {
+                  "block_id": "b0001",
+                  "quote": "The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking."
+                },
+                "author": {
+                  "block_id": "b0001",
+                  "quote": "Albert Einstein"
+                }
+              }
+            ]
+          },
+          {
+            "values": {
+              "quote": "It is our choices, Harry, that show what we truly are, far more than our abilities.",
+              "author": "J.K. Rowling"
+            },
+            "evidence": {
+              "quote": {
+                "block_id": "b0002",
+                "quote": "It is our choices, Harry, that show what we truly are, far more than our abilities."
+              },
+              "author": {
+                "block_id": "b0002",
+                "quote": "J.K. Rowling"
+              }
+            },
+            "evidence_sets": [
+              {
+                "quote": {
+                  "block_id": "b0002",
+                  "quote": "It is our choices, Harry, that show what we truly are, far more than our abilities."
+                },
+                "author": {
+                  "block_id": "b0002",
+                  "quote": "J.K. Rowling"
+                }
+              }
+            ]
+          }
+        ],
+        "total_chunks": 1,
+        "completed_chunks": 1,
+        "failed_chunks": [],
+        "rejected_records": [],
+        "models_used": [
+          "qwen3.8:27b-mlx"
+        ],
+        "duplicate_records": 0
+      },
+      "capture": {
+        "status": "success",
+        "requested_url": "https://quotes.toscrape.com/",
+        "final_url": "https://quotes.toscrape.com/",
+        "error_code": null,
+        "elapsed_seconds": 2.7155824579967884,
+        "attempts": [
+          {
+            "attempt": 1,
+            "status": "success",
+            "error_code": null,
+            "artifacts": {
+              "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/quotes_static/attempt-1/page.html",
+              "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/quotes_static/attempt-1/page.png"
+            }
+          }
+        ],
+        "artifacts": {
+          "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/quotes_static/attempt-1/page.html",
+          "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/quotes_static/attempt-1/page.png"
+        },
+        "browser_version": "154.0.8037.97",
+        "html_sha256": "47c8812e633fe39e398148ebf34515a6c73862f537f01559af85ddca7eedc959",
+        "html_characters": 10953
+      },
+      "model_traces": [
+        {
+          "model": "qwen3.8:27b-mlx",
+          "prompt_sha256": "319033caadfcc6781b347dfdd0a41b43ffa2b3257bf619652cc552f4f86d4aed",
+          "structured_format": true,
+          "response": "{\n  \"records\": [\n    {\n      \"values\": {\n        \"quote\": \"The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.\",\n        \"author\": \"Albert Einstein\"\n      },\n      \"evidence\": {\n        \"quote\": {\"block_id\": \"b0001\", \"quote\": \"The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.\"},\n        \"author\": {\"block_id\": \"b0001\", \"quote\": \"Albert Einstein\"}\n      }\n    },\n    {\n      \"values\": {\n        \"quote\": \"It is our choices, Harry, that show what we truly are, far more than our abilities.\",\n        \"author\": \"J.K. Rowling\"\n      },\n      \"evidence\": {\n        \"quote\": {\"block_id\": \"b0002\", \"quote\": \"It is our choices, Harry, that show what we truly are, far more than our abilities.\"},\n        \"author\": {\"block_id\": \"b0002\", \"quote\": \"J.K. Rowling\"}\n      }\n    }\n  ]\n}",
+          "seconds": 35.00143895899237
+        }
+      ],
+      "seconds": 37.72444870900654
+    },
+    {
+      "case_id": "quotes_static",
+      "variant": "frozen",
+      "status": "success",
+      "error": null,
+      "reference_changed": false,
+      "scores": {
+        "records": {
+          "tp": 0,
+          "predicted": 2,
+          "expected": 2
+        },
+        "fields": {
+          "tp": 0,
+          "predicted": 4,
+          "expected": 4
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 4
+      },
+      "result": {
+        "status": "success",
+        "records": [
+          {
+            "values": {
+              "quote": "The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.",
+              "author": "Albert Einstein"
+            },
+            "evidence": {
+              "quote": {
+                "block_id": "b0001",
+                "quote": "The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking."
+              },
+              "author": {
+                "block_id": "b0001",
+                "quote": "Albert Einstein"
+              }
+            },
+            "evidence_sets": [
+              {
+                "quote": {
+                  "block_id": "b0001",
+                  "quote": "The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking."
+                },
+                "author": {
+                  "block_id": "b0001",
+                  "quote": "Albert Einstein"
+                }
+              }
+            ]
+          },
+          {
+            "values": {
+              "quote": "It is our choices, Harry, that show what we truly are, far more than our abilities.",
+              "author": "J.K. Rowling"
+            },
+            "evidence": {
+              "quote": {
+                "block_id": "b0002",
+                "quote": "It is our choices, Harry, that show what we truly are, far more than our abilities."
+              },
+              "author": {
+                "block_id": "b0002",
+                "quote": "J.K. Rowling"
+              }
+            },
+            "evidence_sets": [
+              {
+                "quote": {
+                  "block_id": "b0002",
+                  "quote": "It is our choices, Harry, that show what we truly are, far more than our abilities."
+                },
+                "author": {
+                  "block_id": "b0002",
+                  "quote": "J.K. Rowling"
+                }
+              }
+            ]
+          }
+        ],
+        "total_chunks": 1,
+        "completed_chunks": 1,
+        "failed_chunks": [],
+        "rejected_records": [],
+        "models_used": [
+          "qwen3.8:27b-mlx"
+        ],
+        "duplicate_records": 0
+      },
+      "capture": null,
+      "model_traces": [
+        {
+          "model": "qwen3.8:27b-mlx",
+          "prompt_sha256": "319033caadfcc6781b347dfdd0a41b43ffa2b3257bf619652cc552f4f86d4aed",
+          "structured_format": true,
+          "response": "{\n  \"records\": [\n    {\n      \"values\": {\n        \"quote\": \"The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.\",\n        \"author\": \"Albert Einstein\"\n      },\n      \"evidence\": {\n        \"quote\": {\"block_id\": \"b0001\", \"quote\": \"The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.\"},\n        \"author\": {\"block_id\": \"b0001\", \"quote\": \"Albert Einstein\"}\n      }\n    },\n    {\n      \"values\": {\n        \"quote\": \"It is our choices, Harry, that show what we truly are, far more than our abilities.\",\n        \"author\": \"J.K. Rowling\"\n      },\n      \"evidence\": {\n        \"quote\": {\"block_id\": \"b0002\", \"quote\": \"It is our choices, Harry, that show what we truly are, far more than our abilities.\"},\n        \"author\": {\"block_id\": \"b0002\", \"quote\": \"J.K. Rowling\"}\n      }\n    }\n  ]\n}",
+          "seconds": 33.20145195900113
+        }
+      ],
+      "seconds": 33.20594008300395
+    },
+    {
+      "case_id": "quotes_javascript",
+      "variant": "frozen",
+      "status": "success",
+      "error": null,
+      "reference_changed": false,
+      "scores": {
+        "records": {
+          "tp": 0,
+          "predicted": 2,
+          "expected": 2
+        },
+        "fields": {
+          "tp": 0,
+          "predicted": 4,
+          "expected": 4
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 4
+      },
+      "result": {
+        "status": "success",
+        "records": [
+          {
+            "values": {
+              "quote": "The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.",
+              "author": "Albert Einstein"
+            },
+            "evidence": {
+              "quote": {
+                "block_id": "b0001",
+                "quote": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”"
+              },
+              "author": {
+                "block_id": "b0001",
+                "quote": "Albert Einstein"
+              }
+            },
+            "evidence_sets": [
+              {
+                "quote": {
+                  "block_id": "b0001",
+                  "quote": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”"
+                },
+                "author": {
+                  "block_id": "b0001",
+                  "quote": "Albert Einstein"
+                }
+              }
+            ]
+          },
+          {
+            "values": {
+              "quote": "It is our choices, Harry, that show what we truly are, far more than our abilities.",
+              "author": "J.K. Rowling"
+            },
+            "evidence": {
+              "quote": {
+                "block_id": "b0002",
+                "quote": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”"
+              },
+              "author": {
+                "block_id": "b0002",
+                "quote": "J.K. Rowling"
+              }
+            },
+            "evidence_sets": [
+              {
+                "quote": {
+                  "block_id": "b0002",
+                  "quote": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”"
+                },
+                "author": {
+                  "block_id": "b0002",
+                  "quote": "J.K. Rowling"
+                }
+              }
+            ]
+          }
+        ],
+        "total_chunks": 1,
+        "completed_chunks": 1,
+        "failed_chunks": [],
+        "rejected_records": [],
+        "models_used": [
+          "qwen3.8:27b-mlx"
+        ],
+        "duplicate_records": 0
+      },
+      "capture": null,
+      "model_traces": [
+        {
+          "model": "qwen3.8:27b-mlx",
+          "prompt_sha256": "c98eed0e7d7fd74fd99d4bce4cbc73b025999abf277b26682d5830929058ac7d",
+          "structured_format": true,
+          "response": "{\n  \"records\": [\n    {\n      \"values\": {\n        \"quote\": \"The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.\",\n        \"author\": \"Albert Einstein\"\n      },\n      \"evidence\": {\n        \"quote\": {\n          \"block_id\": \"b0001\",\n          \"quote\": \"“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”\"\n        },\n        \"author\": {\n          \"block_id\": \"b0001\",\n          \"quote\": \"Albert Einstein\"\n        }\n      }\n    },\n    {\n      \"values\": {\n        \"quote\": \"It is our choices, Harry, that show what we truly are, far more than our abilities.\",\n        \"author\": \"J.K. Rowling\"\n      },\n      \"evidence\": {\n        \"quote\": {\n          \"block_id\": \"b0002\",\n          \"quote\": \"“It is our choices, Harry, that show what we truly are, far more than our abilities.”\"\n        },\n        \"author\": {\n          \"block_id\": \"b0002\",\n          \"quote\": \"J.K. Rowling\"\n        }\n      }\n    }\n  ]\n}",
+          "seconds": 21.176673499998287
+        }
+      ],
+      "seconds": 21.17949791600404
+    },
+    {
+      "case_id": "quotes_javascript",
+      "variant": "live",
+      "status": "success",
+      "error": null,
+      "reference_changed": false,
+      "scores": {
+        "records": {
+          "tp": 0,
+          "predicted": 2,
+          "expected": 2
+        },
+        "fields": {
+          "tp": 0,
+          "predicted": 4,
+          "expected": 4
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 4
+      },
+      "result": {
+        "status": "success",
+        "records": [
+          {
+            "values": {
+              "quote": "The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.",
+              "author": "Albert Einstein"
+            },
+            "evidence": {
+              "quote": {
+                "block_id": "b0001",
+                "quote": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”"
+              },
+              "author": {
+                "block_id": "b0001",
+                "quote": "Albert Einstein"
+              }
+            },
+            "evidence_sets": [
+              {
+                "quote": {
+                  "block_id": "b0001",
+                  "quote": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”"
+                },
+                "author": {
+                  "block_id": "b0001",
+                  "quote": "Albert Einstein"
+                }
+              }
+            ]
+          },
+          {
+            "values": {
+              "quote": "It is our choices, Harry, that show what we truly are, far more than our abilities.",
+              "author": "J.K. Rowling"
+            },
+            "evidence": {
+              "quote": {
+                "block_id": "b0002",
+                "quote": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”"
+              },
+              "author": {
+                "block_id": "b0002",
+                "quote": "J.K. Rowling"
+              }
+            },
+            "evidence_sets": [
+              {
+                "quote": {
+                  "block_id": "b0002",
+                  "quote": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”"
+                },
+                "author": {
+                  "block_id": "b0002",
+                  "quote": "J.K. Rowling"
+                }
+              }
+            ]
+          }
+        ],
+        "total_chunks": 1,
+        "completed_chunks": 1,
+        "failed_chunks": [],
+        "rejected_records": [],
+        "models_used": [
+          "qwen3.8:27b-mlx"
+        ],
+        "duplicate_records": 0
+      },
+      "capture": {
+        "status": "success",
+        "requested_url": "https://quotes.toscrape.com/js/",
+        "final_url": "https://quotes.toscrape.com/js/",
+        "error_code": null,
+        "elapsed_seconds": 3.398814583008061,
+        "attempts": [
+          {
+            "attempt": 1,
+            "status": "success",
+            "error_code": null,
+            "artifacts": {
+              "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/quotes_javascript/attempt-1/page.html",
+              "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/quotes_javascript/attempt-1/page.png"
+            }
+          }
+        ],
+        "artifacts": {
+          "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/quotes_javascript/attempt-1/page.html",
+          "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/quotes_javascript/attempt-1/page.png"
+        },
+        "browser_version": "154.0.8037.97",
+        "html_sha256": "285340cf014d2ebc22441b8a819ee83067a1f5c7b5af8ccbb432fa547596724a",
+        "html_characters": 8925
+      },
+      "model_traces": [
+        {
+          "model": "qwen3.8:27b-mlx",
+          "prompt_sha256": "c98eed0e7d7fd74fd99d4bce4cbc73b025999abf277b26682d5830929058ac7d",
+          "structured_format": true,
+          "response": "{\n  \"records\": [\n    {\n      \"values\": {\n        \"quote\": \"The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.\",\n        \"author\": \"Albert Einstein\"\n      },\n      \"evidence\": {\n        \"quote\": {\n          \"block_id\": \"b0001\",\n          \"quote\": \"“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”\"\n        },\n        \"author\": {\n          \"block_id\": \"b0001\",\n          \"quote\": \"Albert Einstein\"\n        }\n      }\n    },\n    {\n      \"values\": {\n        \"quote\": \"It is our choices, Harry, that show what we truly are, far more than our abilities.\",\n        \"author\": \"J.K. Rowling\"\n      },\n      \"evidence\": {\n        \"quote\": {\n          \"block_id\": \"b0002\",\n          \"quote\": \"“It is our choices, Harry, that show what we truly are, far more than our abilities.”\"\n        },\n        \"author\": {\n          \"block_id\": \"b0002\",\n          \"quote\": \"J.K. Rowling\"\n        }\n      }\n    }\n  ]\n}",
+          "seconds": 19.663134166999953
+        }
+      ],
+      "seconds": 23.066261999993003
+    },
+    {
+      "case_id": "countries",
+      "variant": "live",
+      "status": "success",
+      "error": null,
+      "reference_changed": false,
+      "scores": {
+        "records": {
+          "tp": 3,
+          "predicted": 3,
+          "expected": 3
+        },
+        "fields": {
+          "tp": 6,
+          "predicted": 6,
+          "expected": 6
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 6
+      },
+      "result": {
+        "status": "success",
+        "records": [
+          {
+            "values": {
+              "name": "Andorra",
+              "capital": "Andorra la Vella"
+            },
+            "evidence": {
+              "name": {
+                "block_id": "b0001",
+                "quote": "Andorra"
+              },
+              "capital": {
+                "block_id": "b0001",
+                "quote": "Andorra la Vella"
+              }
+            },
+            "evidence_sets": [
+              {
+                "name": {
+                  "block_id": "b0001",
+                  "quote": "Andorra"
+                },
+                "capital": {
+                  "block_id": "b0001",
+                  "quote": "Andorra la Vella"
+                }
+              }
+            ]
+          },
+          {
+            "values": {
+              "name": "United Arab Emirates",
+              "capital": "Abu Dhabi"
+            },
+            "evidence": {
+              "name": {
+                "block_id": "b0002",
+                "quote": "United Arab Emirates"
+              },
+              "capital": {
+                "block_id": "b0002",
+                "quote": "Abu Dhabi"
+              }
+            },
+            "evidence_sets": [
+              {
+                "name": {
+                  "block_id": "b0002",
+                  "quote": "United Arab Emirates"
+                },
+                "capital": {
+                  "block_id": "b0002",
+                  "quote": "Abu Dhabi"
+                }
+              }
+            ]
+          },
+          {
+            "values": {
+              "name": "Afghanistan",
+              "capital": "Kabul"
+            },
+            "evidence": {
+              "name": {
+                "block_id": "b0003",
+                "quote": "Afghanistan"
+              },
+              "capital": {
+                "block_id": "b0003",
+                "quote": "Kabul"
+              }
+            },
+            "evidence_sets": [
+              {
+                "name": {
+                  "block_id": "b0003",
+                  "quote": "Afghanistan"
+                },
+                "capital": {
+                  "block_id": "b0003",
+                  "quote": "Kabul"
+                }
+              }
+            ]
+          }
+        ],
+        "total_chunks": 1,
+        "completed_chunks": 1,
+        "failed_chunks": [],
+        "rejected_records": [],
+        "models_used": [
+          "qwen3.8:27b-mlx"
+        ],
+        "duplicate_records": 0
+      },
+      "capture": {
+        "status": "success",
+        "requested_url": "https://www.scrapethissite.com/pages/simple/",
+        "final_url": "https://www.scrapethissite.com/pages/simple/",
+        "error_code": null,
+        "elapsed_seconds": 3.3720273339858977,
+        "attempts": [
+          {
+            "attempt": 1,
+            "status": "success",
+            "error_code": null,
+            "artifacts": {
+              "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/countries/attempt-1/page.html",
+              "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/countries/attempt-1/page.png"
+            }
+          }
+        ],
+        "artifacts": {
+          "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/countries/attempt-1/page.html",
+          "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/measured/capture/countries/attempt-1/page.png"
+        },
+        "browser_version": "154.0.8037.97",
+        "html_sha256": "aca5552c581a5fddc0da49c181507b1904da94f4167a6bf1080a5b1df7f70b54",
+        "html_characters": 207005
+      },
+      "model_traces": [
+        {
+          "model": "qwen3.8:27b-mlx",
+          "prompt_sha256": "6d600f79c196869a86ced82715d93bac889050bf1d630cf2e13a5d3dd6c80feb",
+          "structured_format": true,
+          "response": "{\"records\":[{\"values\":{\"name\":\"Andorra\",\"capital\":\"Andorra la Vella\"},\"evidence\":{\"name\":{\"block_id\":\"b0001\",\"quote\":\"Andorra\"},\"capital\":{\"block_id\":\"b0001\",\"quote\":\"Andorra la Vella\"}}},{\"values\":{\"name\":\"United Arab Emirates\",\"capital\":\"Abu Dhabi\"},\"evidence\":{\"name\":{\"block_id\":\"b0002\",\"quote\":\"United Arab Emirates\"},\"capital\":{\"block_id\":\"b0002\",\"quote\":\"Abu Dhabi\"}}},{\"values\":{\"name\":\"Afghanistan\",\"capital\":\"Kabul\"},\"evidence\":{\"name\":{\"block_id\":\"b0003\",\"quote\":\"Afghanistan\"},\"capital\":{\"block_id\":\"b0003\",\"quote\":\"Kabul\"}}}]}",
+          "seconds": 17.935805042012362
+        }
+      ],
+      "seconds": 21.353016332999687
+    },
+    {
+      "case_id": "countries",
+      "variant": "frozen",
+      "status": "success",
+      "error": null,
+      "reference_changed": false,
+      "scores": {
+        "records": {
+          "tp": 3,
+          "predicted": 3,
+          "expected": 3
+        },
+        "fields": {
+          "tp": 6,
+          "predicted": 6,
+          "expected": 6
+        },
+        "unsupported_values": 0,
+        "predicted_nonnull_values": 6
+      },
+      "result": {
+        "status": "success",
+        "records": [
+          {
+            "values": {
+              "name": "Andorra",
+              "capital": "Andorra la Vella"
+            },
+            "evidence": {
+              "name": {
+                "block_id": "b0001",
+                "quote": "Andorra"
+              },
+              "capital": {
+                "block_id": "b0001",
+                "quote": "Andorra la Vella"
+              }
+            },
+            "evidence_sets": [
+              {
+                "name": {
+                  "block_id": "b0001",
+                  "quote": "Andorra"
+                },
+                "capital": {
+                  "block_id": "b0001",
+                  "quote": "Andorra la Vella"
+                }
+              }
+            ]
+          },
+          {
+            "values": {
+              "name": "United Arab Emirates",
+              "capital": "Abu Dhabi"
+            },
+            "evidence": {
+              "name": {
+                "block_id": "b0002",
+                "quote": "United Arab Emirates"
+              },
+              "capital": {
+                "block_id": "b0002",
+                "quote": "Abu Dhabi"
+              }
+            },
+            "evidence_sets": [
+              {
+                "name": {
+                  "block_id": "b0002",
+                  "quote": "United Arab Emirates"
+                },
+                "capital": {
+                  "block_id": "b0002",
+                  "quote": "Abu Dhabi"
+                }
+              }
+            ]
+          },
+          {
+            "values": {
+              "name": "Afghanistan",
+              "capital": "Kabul"
+            },
+            "evidence": {
+              "name": {
+                "block_id": "b0003",
+                "quote": "Afghanistan"
+              },
+              "capital": {
+                "block_id": "b0003",
+                "quote": "Kabul"
+              }
+            },
+            "evidence_sets": [
+              {
+                "name": {
+                  "block_id": "b0003",
+                  "quote": "Afghanistan"
+                },
+                "capital": {
+                  "block_id": "b0003",
+                  "quote": "Kabul"
+                }
+              }
+            ]
+          }
+        ],
+        "total_chunks": 1,
+        "completed_chunks": 1,
+        "failed_chunks": [],
+        "rejected_records": [],
+        "models_used": [
+          "qwen3.8:27b-mlx"
+        ],
+        "duplicate_records": 0
+      },
+      "capture": null,
+      "model_traces": [
+        {
+          "model": "qwen3.8:27b-mlx",
+          "prompt_sha256": "6d600f79c196869a86ced82715d93bac889050bf1d630cf2e13a5d3dd6c80feb",
+          "structured_format": true,
+          "response": "{\n  \"records\": [\n    {\n      \"values\": {\n        \"name\": \"Andorra\",\n        \"capital\": \"Andorra la Vella\"\n      },\n      \"evidence\": {\n        \"name\": {\n          \"block_id\": \"b0001\",\n          \"quote\": \"Andorra\"\n        },\n        \"capital\": {\n          \"block_id\": \"b0001\",\n          \"quote\": \"Andorra la Vella\"\n        }\n      }\n    },\n    {\n      \"values\": {\n        \"name\": \"United Arab Emirates\",\n        \"capital\": \"Abu Dhabi\"\n      },\n      \"evidence\": {\n        \"name\": {\n          \"block_id\": \"b0002\",\n          \"quote\": \"United Arab Emirates\"\n        },\n        \"capital\": {\n          \"block_id\": \"b0002\",\n          \"quote\": \"Abu Dhabi\"\n        }\n      }\n    },\n    {\n      \"values\": {\n        \"name\": \"Afghanistan\",\n        \"capital\": \"Kabul\"\n      },\n      \"evidence\": {\n        \"name\": {\n          \"block_id\": \"b0003\",\n          \"quote\": \"Afghanistan\"\n        },\n        \"capital\": {\n          \"block_id\": \"b0003\",\n          \"quote\": \"Kabul\"\n        }\n      }\n    }\n  ]\n}",
+          "seconds": 16.73301475000335
+        }
+      ],
+      "seconds": 16.73614995800017
+    }
+  ],
+  "limitations": [
+    "Six public practice pages and predefined record regions are not representative production-web performance.",
+    "DOM-derived references are frozen before inference; changed live references are excluded from quality scoring and reported.",
+    "Source-string presence does not prove semantic correctness or prompt-injection resistance.",
+    "This is current-pipeline measurement, not a paired legacy improvement claim. Controlled localhost browser tests are separate evidence."
+  ]
+}

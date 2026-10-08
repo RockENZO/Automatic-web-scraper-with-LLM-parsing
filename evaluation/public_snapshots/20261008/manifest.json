@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "scope": "Six public scraping-practice pages, three hosts; narrow predefined record regions. Not representative production websites.",
+  "permission_sources": [
+    "https://toscrape.com/",
+    "https://www.scrapethissite.com/pages/"
+  ],
+  "specification_sha256": "a51652675787ad8308d377ff9924e95f94f076d9dd0874ca3d2a606289885453",
+  "reference_method": "Predefined DOM field selectors joined within each record; frozen before LLM runs. No model-generated labels. Model input is the predefined first-N record region, not the full website.",
+  "cases": [
+    {
+      "id": "book_attic",
+      "url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+      "selector": ".product_main",
+      "scope_selector": ".product_main",
+      "limit": 1,
+      "fields": {
+        "name": "h1",
+        "price": ".price_color"
+      },
+      "snapshot": "book_attic.html",
+      "snapshot_sha256": "7c9bb9f163c6ba33f37efecfb9dfdfea114d6f6d57f796624663810e2ea97125",
+      "expected": [
+        {
+          "name": "A Light in the Attic",
+          "price": "£51.77"
+        }
+      ],
+      "capture": {
+        "status": "success",
+        "requested_url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+        "final_url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+        "error_code": null,
+        "elapsed_seconds": 3.584063125003013,
+        "attempts": [
+          {
+            "attempt": 1,
+            "status": "success",
+            "error_code": null,
+            "artifacts": {
+              "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/book_attic/attempt-1/page.html",
+              "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/book_attic/attempt-1/page.png"
+            }
+          }
+        ],
+        "artifacts": {
+          "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/book_attic/attempt-1/page.html",
+          "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/book_attic/attempt-1/page.png"
+        },
+        "browser_version": "154.0.8037.97",
+        "html_sha256": "e1e514cc328f0fada102edf872172160ee0346fb04d372b93d2bf8f71eaa004f",
+        "html_characters": 9018
+      }
+    },
+    {
+      "id": "book_velvet",
+      "url": "https://books.toscrape.com/catalogue/tipping-the-velvet_999/index.html",
+      "selector": ".product_main",
+      "scope_selector": ".product_main",
+      "limit": 1,
+      "fields": {
+        "name": "h1",
+        "price": ".price_color"
+      },
+      "snapshot": "book_velvet.html",
+      "snapshot_sha256": "c9966b498aebb184ebb07a25d6a82711f67b99404698076dcd5f3005d9af3d7e",
+      "expected": [
+        {
+          "name": "Tipping the Velvet",
+          "price": "£53.74"
+        }
+      ],
+      "capture": {
+        "status": "success",
+        "requested_url": "https://books.toscrape.com/catalogue/tipping-the-velvet_999/index.html",
+        "final_url": "https://books.toscrape.com/catalogue/tipping-the-velvet_999/index.html",
+        "error_code": null,
+        "elapsed_seconds": 3.366080833991873,
+        "attempts": [
+          {
+            "attempt": 1,
+            "status": "success",
+            "error_code": null,
+            "artifacts": {
+              "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/book_velvet/attempt-1/page.html",
+              "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/book_velvet/attempt-1/page.png"
+            }
+          }
+        ],
+        "artifacts": {
+          "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/book_velvet/attempt-1/page.html",
+          "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/book_velvet/attempt-1/page.png"
+        },
+        "browser_version": "154.0.8037.97",
+        "html_sha256": "5a60b32e717f504742c30fb65b62cf9f44b280cab49c9e0bd7f1259e12234135",
+        "html_characters": 10672
+      }
+    },
+    {
+      "id": "book_soumission",
+      "url": "https://books.toscrape.com/catalogue/soumission_998/index.html",
+      "selector": ".product_main",
+      "scope_selector": ".product_main",
+      "limit": 1,
+      "fields": {
+        "name": "h1",
+        "price": ".price_color"
+      },
+      "snapshot": "book_soumission.html",
+      "snapshot_sha256": "151359c19c72e79ef9e5d1a6bf9b8167c8ddda3592d4eeac501217ebf6f105c2",
+      "expected": [
+        {
+          "name": "Soumission",
+          "price": "£50.10"
+        }
+      ],
+      "capture": {
+        "status": "success",
+        "requested_url": "https://books.toscrape.com/catalogue/soumission_998/index.html",
+        "final_url": "https://books.toscrape.com/catalogue/soumission_998/index.html",
+        "error_code": null,
+        "elapsed_seconds": 3.774506208996172,
+        "attempts": [
+          {
+            "attempt": 1,
+            "status": "success",
+            "error_code": null,
+            "artifacts": {
+              "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/book_soumission/attempt-1/page.html",
+              "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/book_soumission/attempt-1/page.png"
+            }
+          }
+        ],
+        "artifacts": {
+          "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/book_soumission/attempt-1/page.html",
+          "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/book_soumission/attempt-1/page.png"
+        },
+        "browser_version": "154.0.8037.97",
+        "html_sha256": "1bc277d8c2c502abb52f61a86b9c81d9c1e7cdf1c3eb3b3e4c50ded8adc62385",
+        "html_characters": 12106
+      }
+    },
+    {
+      "id": "quotes_static",
+      "url": "https://quotes.toscrape.com/",
+      "selector": ".quote",
+      "scope_selector": ".quote",
+      "limit": 2,
+      "fields": {
+        "quote": ".text",
+        "author": ".author"
+      },
+      "snapshot": "quotes_static.html",
+      "snapshot_sha256": "259535edf21fb37f2c083c2494bd2c3b57bf7b190fe17e795d3fce25713bf806",
+      "expected": [
+        {
+          "quote": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+          "author": "Albert Einstein"
+        },
+        {
+          "quote": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+          "author": "J.K. Rowling"
+        }
+      ],
+      "capture": {
+        "status": "success",
+        "requested_url": "https://quotes.toscrape.com/",
+        "final_url": "https://quotes.toscrape.com/",
+        "error_code": null,
+        "elapsed_seconds": 4.807466041995212,
+        "attempts": [
+          {
+            "attempt": 1,
+            "status": "success",
+            "error_code": null,
+            "artifacts": {
+              "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/quotes_static/attempt-1/page.html",
+              "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/quotes_static/attempt-1/page.png"
+            }
+          }
+        ],
+        "artifacts": {
+          "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/quotes_static/attempt-1/page.html",
+          "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/quotes_static/attempt-1/page.png"
+        },
+        "browser_version": "154.0.8037.97",
+        "html_sha256": "47c8812e633fe39e398148ebf34515a6c73862f537f01559af85ddca7eedc959",
+        "html_characters": 10953
+      }
+    },
+    {
+      "id": "quotes_javascript",
+      "url": "https://quotes.toscrape.com/js/",
+      "selector": ".quote",
+      "scope_selector": ".quote",
+      "limit": 2,
+      "fields": {
+        "quote": ".text",
+        "author": ".author"
+      },
+      "snapshot": "quotes_javascript.html",
+      "snapshot_sha256": "3b3706ee1d191401f8c3c0258637780b59b58b6658db691e97e5598bf28e368a",
+      "expected": [
+        {
+          "quote": "“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”",
+          "author": "Albert Einstein"
+        },
+        {
+          "quote": "“It is our choices, Harry, that show what we truly are, far more than our abilities.”",
+          "author": "J.K. Rowling"
+        }
+      ],
+      "capture": {
+        "status": "success",
+        "requested_url": "https://quotes.toscrape.com/js/",
+        "final_url": "https://quotes.toscrape.com/js/",
+        "error_code": null,
+        "elapsed_seconds": 4.7033455000055255,
+        "attempts": [
+          {
+            "attempt": 1,
+            "status": "success",
+            "error_code": null,
+            "artifacts": {
+              "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/quotes_javascript/attempt-1/page.html",
+              "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/quotes_javascript/attempt-1/page.png"
+            }
+          }
+        ],
+        "artifacts": {
+          "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/quotes_javascript/attempt-1/page.html",
+          "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/quotes_javascript/attempt-1/page.png"
+        },
+        "browser_version": "154.0.8037.97",
+        "html_sha256": "285340cf014d2ebc22441b8a819ee83067a1f5c7b5af8ccbb432fa547596724a",
+        "html_characters": 8925
+      }
+    },
+    {
+      "id": "countries",
+      "url": "https://www.scrapethissite.com/pages/simple/",
+      "selector": ".country",
+      "scope_selector": ".country",
+      "limit": 3,
+      "fields": {
+        "name": ".country-name",
+        "capital": ".country-capital"
+      },
+      "snapshot": "countries.html",
+      "snapshot_sha256": "bdbbe62c37f5d925eef0dd1e6763f95de52c882af879f8bdf1f593a6de6a07c2",
+      "expected": [
+        {
+          "name": "Andorra",
+          "capital": "Andorra la Vella"
+        },
+        {
+          "name": "United Arab Emirates",
+          "capital": "Abu Dhabi"
+        },
+        {
+          "name": "Afghanistan",
+          "capital": "Kabul"
+        }
+      ],
+      "capture": {
+        "status": "success",
+        "requested_url": "https://www.scrapethissite.com/pages/simple/",
+        "final_url": "https://www.scrapethissite.com/pages/simple/",
+        "error_code": null,
+        "elapsed_seconds": 3.4106357079872396,
+        "attempts": [
+          {
+            "attempt": 1,
+            "status": "success",
+            "error_code": null,
+            "artifacts": {
+              "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/countries/attempt-1/page.html",
+              "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/countries/attempt-1/page.png"
+            }
+          }
+        ],
+        "artifacts": {
+          "html": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/countries/attempt-1/page.html",
+          "screenshot": "/Users/rockingmac/Documents/Codex/2026-09-29/i-2/work/repos/Automatic-web-scraper-with-LLM-parsing/runs/public-web-20261008/frozen/capture/countries/attempt-1/page.png"
+        },
+        "browser_version": "154.0.8037.97",
+        "html_sha256": "47c08e8dc95e5497e8f47c3fd6f1712b966e6849919ad567e7be19d5028647d0",
+        "html_characters": 207016
+      }
+    }
+  ]
+}

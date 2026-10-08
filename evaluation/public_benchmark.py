@@ -1,0 +1,353 @@
+"""Freeze real public DOM references before model execution; separate live/frozen scores."""
+
+import argparse
+import hashlib
+import importlib.metadata
+import json
+import platform
+import sys
+import time
+import urllib.request
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+import config
+from evaluation.benchmark import RecordedClient, rates, score, sha
+from scrape import ScrapeOptions, scrape_page
+from structured_content import chunk_blocks, extract_blocks
+from structured_parse import extract_structured
+
+
+class ReferenceChanged(ValueError):
+    """Live reference values or structure no longer match the frozen benchmark."""
+
+
+def package_versions():
+    versions = {}
+    for name in ("selenium", "beautifulsoup4", "streamlit"):
+        try:
+            versions[name] = importlib.metadata.version(name)
+        except importlib.metadata.PackageNotFoundError:
+            versions[name] = None
+    return versions
+
+
+def code_hashes():
+    return {
+        str(p.relative_to(ROOT)): sha(p)
+        for p in [
+            ROOT / "config.py",
+            ROOT / "utils.py",
+            ROOT / "content.py",
+            ROOT / "parse.py",
+            ROOT / "scrape.py",
+            ROOT / "browser_driver.py",
+            ROOT / "structured_content.py",
+            ROOT / "structured_parse.py",
+            ROOT / "ollama_client.py",
+            ROOT / "evaluation/benchmark.py",
+            Path(__file__),
+        ]
+    }
+
+
+def effective_settings():
+    return {
+        "primary_model": config.OLLAMA_MODEL,
+        "fallback_model": config.OLLAMA_FALLBACK_MODEL,
+        "context_tokens": config.OLLAMA_NUM_CTX,
+        "request_timeout_seconds": config.OLLAMA_TIMEOUT,
+        "attempts_per_model_chunk": config.OLLAMA_ATTEMPTS,
+        "retry_delay_seconds": config.OLLAMA_RETRY_DELAY,
+        "source_chunk_budget": 1400,
+        "max_chunk_characters": config.MAX_CHUNK_SIZE,
+        "generation": {"temperature": 0, "seed": 42, "num_predict": 2048},
+        "endpoint_sha256": hashlib.sha256(config.OLLAMA_BASE_URL.encode()).hexdigest(),
+    }
+
+
+def region(html, case):
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(html, "html.parser")
+    nodes = soup.select(case["scope_selector"])[: case["limit"]]
+    if len(nodes) != case["limit"]:
+        raise ValueError("Reference record region is incomplete")
+    expected = []
+    for node in nodes:
+        values = {}
+        for name, selector in case["fields"].items():
+            item = node.select_one(selector)
+            if item is None:
+                raise ValueError("Reference field is absent")
+            values[name] = item.get_text(" ", strip=True)
+            if not values[name]:
+                raise ValueError("Reference field is empty")
+        expected.append(values)
+    scoped = (
+        "<html><body>"
+        + "".join("<article>" + str(node) + "</article>" for node in nodes)
+        + "</body></html>"
+    )
+    return scoped, expected
+
+
+def freeze(specification, output):
+    if output.exists():
+        raise ValueError("Preserve frozen snapshots; choose new output")
+    spec = json.loads(specification.read_text())
+    output.mkdir(parents=True)
+    cases = []
+    for case in spec["cases"]:
+        capture = scrape_page(
+            case["url"],
+            ScrapeOptions(
+                content_selector=case["selector"],
+                content_timeout=15,
+                overall_timeout=45,
+            ),
+            output / "capture" / case["id"],
+        )
+        if capture.status != "success":
+            raise RuntimeError(
+                "Cannot freeze "
+                + case["id"]
+                + ": "
+                + capture.error_code
+                + ". Captures retained; no synthetic substitution."
+            )
+        scoped, expected = region(capture.html, case)
+        name = case["id"] + ".html"
+        (output / name).write_text(scoped)
+        cases.append(
+            {
+                **case,
+                "snapshot": name,
+                "snapshot_sha256": sha(output / name),
+                "expected": expected,
+                "capture": capture.as_dict(),
+            }
+        )
+        print("Frozen", case["id"], flush=True)
+        time.sleep(1)
+    document = {
+        "schema_version": 1,
+        "scope": spec["scope"],
+        "permission_sources": spec["permission_sources"],
+        "specification_sha256": sha(specification),
+        "reference_method": "Predefined DOM field selectors joined within each record; frozen before LLM runs. No model-generated labels. Model input is the predefined first-N record region, not the full website.",
+        "cases": cases,
+    }
+    (output / "manifest.json").write_text(
+        json.dumps(document, indent=2, ensure_ascii=False) + "\n"
+    )
+    return document
+
+
+def evaluate(dataset, output, model, mode="both"):
+    if mode not in ("frozen", "live", "both"):
+        raise ValueError("Unknown benchmark mode")
+    if output.exists():
+        raise ValueError("Preserve benchmark results; choose new output")
+    manifest = json.loads((dataset / "manifest.json").read_text())
+    for case in manifest["cases"]:
+        if sha(dataset / case["snapshot"]) != case["snapshot_sha256"]:
+            raise ValueError("Frozen snapshot changed")
+    with urllib.request.urlopen(
+        config.OLLAMA_BASE_URL + "/api/tags", timeout=10
+    ) as response:
+        models = json.load(response)["models"]
+    identity = next((m for m in models if m["name"] == model), None)
+    if identity is None:
+        raise ValueError("Exact installed model identity required")
+    config.OLLAMA_MODEL = config.OLLAMA_FALLBACK_MODEL = model
+    provenance = code_hashes()
+    settings = effective_settings()
+    output.mkdir(parents=True)
+    reports = []
+    for index, case in enumerate(manifest["cases"]):
+        variants = (
+            (["frozen", "live"] if index % 2 == 0 else ["live", "frozen"])
+            if mode == "both"
+            else [mode]
+        )
+        for variant in variants:
+            started = time.perf_counter()
+            traces = []
+            capture = None
+            error = None
+            drift = False
+            error_code = None
+            try:
+                html = (dataset / case["snapshot"]).read_text()
+                if variant == "live":
+                    capture = scrape_page(
+                        case["url"],
+                        ScrapeOptions(
+                            content_selector=case["selector"],
+                            content_timeout=15,
+                            overall_timeout=45,
+                        ),
+                        output / "capture" / case["id"],
+                    )
+                    if capture.status != "success":
+                        raise RuntimeError(capture.error_code)
+                    try:
+                        html, reference = region(capture.html, case)
+                    except ValueError as exc:
+                        drift = True
+                        raise ReferenceChanged(str(exc)) from exc
+                    drift = reference != case["expected"]
+                    if drift:
+                        raise ReferenceChanged("Live reference values changed")
+                blocks = extract_blocks(html)
+                chunks = chunk_blocks(blocks, 1400)
+                result = extract_structured(
+                    chunks,
+                    "Extract every record in the supplied region, keeping fields from each record together. Copy values verbatim.",
+                    list(case["fields"]),
+                    model_factory=lambda name: RecordedClient(name, traces),
+                )
+                predicted = [r["values"] for r in result.records]
+                metrics = (
+                    score(
+                        predicted,
+                        case["expected"],
+                        list(case["fields"]),
+                        "\n".join(b.text for b in blocks),
+                    )
+                    if not drift
+                    else None
+                )
+                status = result.status
+                detail = result.as_dict()
+            except Exception as exc:
+                error = type(exc).__name__ + ": " + str(exc)
+                error_code = (
+                    "reference_changed"
+                    if isinstance(exc, ReferenceChanged)
+                    else "evaluation_failed"
+                )
+                status = (
+                    "reference_changed"
+                    if isinstance(exc, ReferenceChanged)
+                    else "failed"
+                )
+                detail = None
+                metrics = (
+                    score([], case["expected"], list(case["fields"]), "")
+                    if not drift
+                    else None
+                )
+            reports.append(
+                {
+                    "case_id": case["id"],
+                    "variant": variant,
+                    "status": status,
+                    "error": error,
+                    "error_code": error_code,
+                    "reference_changed": drift,
+                    "scores": metrics,
+                    "result": detail,
+                    "capture": capture.as_dict() if capture else None,
+                    "model_traces": traces,
+                    "seconds": time.perf_counter() - started,
+                }
+            )
+            (output / "progress.json").write_text(
+                json.dumps(reports, indent=2, ensure_ascii=False) + "\n"
+            )
+            print(case["id"], variant, status, flush=True)
+            if variant == "live":
+                time.sleep(1)
+    aggregates = {}
+    for variant in ("frozen", "live"):
+        selected = [r for r in reports if r["variant"] == variant]
+        if not selected:
+            continue
+        scored = [r for r in selected if r["scores"] is not None]
+        aggregates[variant] = {
+            kind: rates(
+                {
+                    key: sum(r["scores"][kind][key] for r in scored)
+                    for key in ("tp", "predicted", "expected")
+                }
+            )
+            for kind in ("fields", "records")
+        }
+        if not scored:
+            for kind in ("fields", "records"):
+                for metric in ("precision", "recall", "f1"):
+                    aggregates[variant][kind][metric] = None
+        aggregates[variant].update(
+            cases=len(selected),
+            scored_cases=len(scored),
+            reference_changed_cases=sum(r["reference_changed"] for r in selected),
+            failed_cases=sum(r["status"] == "failed" for r in selected),
+            total_seconds=sum(r["seconds"] for r in selected),
+            source_presence_failures=sum(
+                r["scores"]["unsupported_values"] for r in scored
+            ),
+        )
+        if variant == "live":
+            aggregates[variant]["capture_success_rate"] = sum(
+                r["capture"] is not None and r["capture"]["status"] == "success"
+                for r in selected
+            ) / len(selected)
+    report = {
+        "status": "experimental",
+        "date": time.strftime("%Y-%m-%d"),
+        "scope": manifest["scope"],
+        "frozen_manifest_sha256": sha(dataset / "manifest.json"),
+        "model": identity,
+        "runtime": {
+            "python": platform.python_version(),
+            "platform": platform.platform(),
+            "packages": package_versions(),
+        },
+        "code_sha256": provenance,
+        "effective_settings": settings,
+        "aggregate": aggregates,
+        "cases": reports,
+        "limitations": [
+            "Six public practice pages and predefined record regions are not representative production-web performance.",
+            "DOM-derived references are frozen before inference; changed live references are excluded from quality scoring and reported.",
+            "Source-string presence does not prove semantic correctness or prompt-injection resistance.",
+            "This is current-pipeline measurement, not a paired legacy improvement claim. Controlled localhost browser tests are separate evidence.",
+        ],
+    }
+    (output / "report.json").write_text(
+        json.dumps(report, indent=2, ensure_ascii=False, allow_nan=False) + "\n"
+    )
+    return report
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    subs = parser.add_subparsers(dest="command", required=True)
+    freezing = subs.add_parser("freeze")
+    freezing.add_argument(
+        "--specification", type=Path, default=ROOT / "evaluation/public_pages.json"
+    )
+    freezing.add_argument("--output", type=Path, required=True)
+    scoring = subs.add_parser("evaluate")
+    scoring.add_argument("--dataset", type=Path, required=True)
+    scoring.add_argument("--output", type=Path, required=True)
+    scoring.add_argument("--model", required=True)
+    scoring.add_argument("--mode", choices=["frozen", "live", "both"], default="both")
+    args = parser.parse_args()
+    result = (
+        freeze(args.specification, args.output)
+        if args.command == "freeze"
+        else evaluate(args.dataset, args.output, args.model, args.mode)
+    )
+    print(
+        json.dumps(
+            result.get("aggregate", {"frozen_cases": len(result["cases"])}), indent=2
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()
