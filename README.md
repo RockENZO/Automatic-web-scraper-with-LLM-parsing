@@ -27,7 +27,11 @@ The scraper accepts only HTTP(S) URLs resolving to public IP addresses and rejec
 - 🌐 Better URL validation and domain extraction
 
 ## Demo
-![Web Scrapper](ScreenRecording.gif)
+![Current scraper demo: live capture, structured extraction, source evidence, JSON export and failure diagnostics](ScreenRecording.gif)
+
+Recorded from the current app on 8 October 2026 using local `qwen3.8:27b-mlx` and a [Books to Scrape practice page](https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html). The walkthrough shows a real title/price extraction, exact source quotes and block IDs, a verified JSON download, and a deliberately invalid CSS selector (`[`) with capture diagnostics.
+
+**Edited screen-capture sequence:** waiting intervals are omitted and reading pauses added. The shown run took approximately **4.15 seconds to capture** and **14.03 seconds to extract**; these are single-run timings, not throughput or accuracy benchmarks. No model results are mocked. [Recording metadata](docs/demo-recording.json) documents the app version, input, observed output and timings.
 
 ## Installation
 ### Prerequisites
