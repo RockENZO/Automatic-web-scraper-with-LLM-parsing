@@ -1,0 +1,39 @@
+{
+  "recorded_on": "2026-10-08",
+  "application_commit": "68edb5253db59dc0a57b673b6f85103556d65050",
+  "format": "Edited walkthrough assembled from actual app screen captures; pauses omitted and viewing holds added. Not a throughput benchmark.",
+  "source_url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+  "model": "qwen3.8:27b-mlx",
+  "browser_version": "154.0.8037.97",
+  "capture_elapsed_seconds": 4.15377333300421,
+  "extraction_elapsed_seconds": 14.030138957998133,
+  "verified_values": {
+    "name": "A Light in the Attic",
+    "price": "£51.77"
+  },
+  "field_evidence": {
+    "name": {
+      "block_id": "b0007",
+      "quote": "A Light in the Attic"
+    },
+    "price": {
+      "block_id": "b0008",
+      "quote": "£51.77"
+    }
+  },
+  "export_verified": true,
+  "failure_case": {
+    "content_selector": "[",
+    "observed_error": "invalid_selector",
+    "capture_artifacts": "Actual browser screenshot and HTML offered by the app"
+  },
+  "gif": {
+    "path": "ScreenRecording.gif",
+    "width": 571,
+    "height": 832,
+    "frames": 8,
+    "duration_ms": 25600,
+    "bytes": 496247,
+    "sha256": "d3beeead29e95da0f72781851ff2bf4ef4f818d296961f1c956be49fa020db45"
+  }
+}
