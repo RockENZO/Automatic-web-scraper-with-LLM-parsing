@@ -1,30 +1,25 @@
-# Automatic Web Scraper
+# Automatic Web Scraper with Local LLM Extraction
 
-This project is an automatic web scraper that uses the LLM Ollama gpt-oss:20b to parse the body content of a web page. The application is built using Streamlit for the user interface and various Python libraries for web scraping and parsing.
+A local Streamlit application that captures public webpages with Selenium and extracts structured records using a configurable local LLM through Ollama. The default workflow produces a table and downloadable JSON with exact source quotes, block IDs and capture provenance. A separate free-text mode remains available.
 
-## Repository and URL safety
+Ollama is the model runtime, not a model name. The app's configuration defaults are `gpt-oss:20b` with `llama3.1:8b` fallback; the published extraction studies and current demo used the separately installed `qwen3.8:27b-mlx`. These results do not establish the quality of other models or arbitrary websites.
 
-The local Python environment is ignored by Git. Create `.venv` during setup; do not commit it. Run isolated checks with `python -m unittest discover -s tests`. The existing `test_scraper.py` is a manual integration check that needs Chrome, a live site, and Ollama.
+## Current capabilities
 
-The scraper accepts only HTTP(S) URLs resolving to public IP addresses and rejects localhost, private addresses, credentials, and unusual ports. DNS can change after validation, and browsers can follow redirects. If you deploy this as a shared web service, also restrict outbound network access and apply request limits at the hosting layer.
+- **Browser capture:** non-empty content stability checks, optional CSS content selector, bounded retries, navigation/content timeouts and a supervised overall deadline.
+- **Structured extraction:** 1–12 requested fields, schema-constrained JSON, semantic HTML blocks, exact source-quote validation and cross-chunk duplicate merging.
+- **Inspect results:** value table, numbered source blocks, field evidence, actual model names, rejected records and explicit success/empty/partial/failed outcomes.
+- **Export and diagnose:** structured JSON, free-text downloads, capture reports, and HTML/screenshots when the browser has time to retain them. The table also offers CSV export.
+- **Reproducible evaluation:** isolated tests, actual Chrome integration tests, synthetic regression fixtures and a separate frozen/live public-demo-page study.
 
-## Features
-- 🚀 **Advanced Web Scraping**: Capture readable content from public HTTP(S) pages with configurable content waits, bounded retries and diagnostic artifacts
-- 🧹 **Smart Content Cleaning**: Clean the scraped content by removing scripts, styles, and unwanted elements
-- 📊 **Intelligent Chunking**: Split large content into manageable chunks for processing
-- 🤖 **AI-Powered Parsing**: Parse content using the powerful Ollama gpt-oss:20b model
-- 📈 **Real-time Progress**: Track scraping and parsing progress with visual indicators
-- 💾 **Export Results**: Download parsed results as text files
-- ⚙️ **Configurable Settings**: Adjust chunk sizes and processing parameters
+## Published evidence and scope
 
-## New in This Version
-- ✨ Updated to use Ollama gpt-oss:20b model for better performance
-- 🛡️ Enhanced error handling and logging
-- 🎨 Improved user interface with better feedback
-- 📱 Responsive design with sidebar configuration
-- 🔧 Modular code structure with separate config and utility files
-- 📊 Content statistics and processing metrics
-- 🌐 Better URL validation and domain extraction
+| Study | Observed result | Scope |
+| --- | --- | --- |
+| Paired extraction study | Field exact-match F1 **0.778 → 0.938** | 16 fixed synthetic HTML fixtures, same Qwen model; combined pipeline/configuration comparison |
+| Public-page study | **6/6 captures**; field exact-match F1 **0.600** | Six permitted practice pages, ten scoped records / twenty fields; not a paired improvement study |
+
+The higher synthetic-fixture score is not general web accuracy. Exact-match quote punctuation and record association remain concrete failure cases. [Synthetic report](evaluation/reports/structured_benchmark_20260930.json) · [Public-page report](evaluation/reports/public_web_20261008.json). Reproduction commands, raw responses and limitations appear below.
 
 ## Demo
 ![Current scraper demo: live capture, structured extraction, source evidence, JSON export and failure diagnostics](ScreenRecording.gif)
@@ -33,144 +28,94 @@ Recorded from the current app on 8 October 2026 using local `qwen3.8:27b-mlx` an
 
 **Edited screen-capture sequence:** waiting intervals are omitted and reading pauses added. The shown run took approximately **4.15 seconds to capture** and **14.03 seconds to extract**; these are single-run timings, not throughput or accuracy benchmarks. No model results are mocked. [Recording metadata](docs/demo-recording.json) documents the app version, input, observed output and timings.
 
-## Installation
-### Prerequisites
-- Python 3.10 or higher
-- Ollama installed with gpt-oss:20b model
-- Chrome browser (ChromeDriver will be downloaded automatically)
+## Quick start
 
-### Install Ollama and the model:
+Requires Python 3.10+, Chrome, and a running local Ollama installation with a model that can return the requested structured output. Model memory requirements depend on the model you choose.
+
 ```bash
-# Install Ollama (macOS)
-brew install ollama
-
-# Pull the gpt-oss:20b model
-ollama pull gpt-oss:20b
-```
-
-### Create a virtual environment:
-```bash
+git clone https://github.com/RockENZO/Automatic-web-scraper-with-LLM-parsing.git
+cd Automatic-web-scraper-with-LLM-parsing
 python -m venv .venv
-```
-
-### Activate the virtual environment:
-- On macOS and Linux:
-```bash
+# macOS / Linux:
 source .venv/bin/activate
-```
-- On Windows:
-```bash
-.\.venv\Scripts\activate
-``` 
-
-### Installing dependencies:
-```bash
-pip install -r requirements.txt
+# Windows PowerShell alternative: .\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
 ```
 
-### Setup ChromeDriver (automatic):
-```bash
-# Optional: Run ChromeDriver setup utility to verify compatibility
-python setup_chromedriver.py
-```
-
-## Running the Application
-1. Make sure Ollama is running:
-```bash
-ollama serve
-```
-
-2. Activate the virtual environment (if not already activated):
-- On macOS and Linux:
-```bash
-source .venv/bin/activate
-```
-- On Windows:
-```bash
-.\.venv\Scripts\activate
-``` 
-
-3. Run the Streamlit application:
-```bash
-streamlit run main.py
-```
-## Usage
-1. 🌐 **Enter URL**: Input the URL of the website you want to scrape
-2. ⚙️ **Configure Settings**: Adjust chunk size in the sidebar (optional)
-3. 🤳 **Scrape Website**: Click "Scrape Website" to extract content
-4. 👁️ **Review Content**: View the numbered source blocks in the expander
-5. 📝 **Describe Parsing**: Describe what specific information you want to extract
-6. 🚀 **Extract Records**: Choose structured output, specify fields (for example `name,price`), and click "Extract records"; free-text mode remains available
-7. 📊 **View Results**: Review the extracted information
-8. 💾 **Download**: Save structured JSON with source evidence, or text in free-text mode
-
-## Examples of Parse Descriptions
-- "Extract all email addresses"
-- "Find product names and prices"
-- "Get all phone numbers and contact information"
-- "Extract article titles and publication dates"
-- "Find all social media links"
-
-## Configuration
-You can modify settings in `config.py`:
-- **Model Settings**: Change Ollama model, temperature, and prediction limits
-- **Scraping Settings**: Adjust wait times, browser settings, and chunk sizes
-- **UI Settings**: Customize page title, icons, and layout
-
-## Project Structure
-```
-├── main.py                # Main Streamlit application
-├── scrape.py             # Web scraping functionality
-├── parse.py              # AI parsing with Ollama
-├── config.py             # Configuration settings
-├── utils.py              # Utility functions
-├── setup_chromedriver.py # ChromeDriver setup utility
-├── requirements.txt      # Python dependencies
-└── README.md            # Documentation
-```
-
-## Dependencies
-- **streamlit**: Web application framework
-- **langchain & langchain_ollama**: LLM integration
-- **selenium**: Web browser automation
-- **webdriver-manager**: Automatic ChromeDriver management
-- **beautifulsoup4**: HTML parsing
-- **lxml & html5lib**: XML/HTML processing
-- **python-dotenv**: Environment variable management
-- **requests & urllib3**: HTTP libraries
-
-## Troubleshooting
-### Common Issues:
-1. **ChromeDriver version mismatch**: The app now automatically downloads the correct ChromeDriver version
-   - If you get ChromeDriver errors, run: `python setup_chromedriver.py`
-   - This will download and test the compatible ChromeDriver for your Chrome version
-2. **Ollama model not available**: Run `ollama pull gpt-oss:20b`
-3. **Connection errors**: Check internet connection and URL validity
-4. **Memory issues**: Reduce chunk size in sidebar settings
-
-### ChromeDriver Setup:
-The project now includes automatic ChromeDriver management using `webdriver-manager`. If you encounter ChromeDriver compatibility issues:
+Start Ollama using its installed app/service, or run `ollama serve` in another terminal if it is not already running. Use `ollama list` to identify exact installed model names. For the configuration defaults:
 
 ```bash
-# Run the ChromeDriver setup utility
-python setup_chromedriver.py
+ollama pull gpt-oss:20b
+ollama pull llama3.1:8b
+python -m streamlit run main.py
 ```
 
-This utility will:
-- ✅ Detect your Chrome browser version
-- 📥 Download the compatible ChromeDriver automatically
-- 🧪 Test the ChromeDriver to ensure it works
-- 📋 Provide detailed status information
+To use a different installed model, set **both** primary and fallback deliberately. For the model used in the recorded demo, only if it is installed on your machine:
 
-### Performance Tips:
-- Use smaller chunk sizes for faster processing
-- Enable headless browsing for better performance
-- Close unnecessary browser tabs to free memory
-- The ChromeDriver is automatically cached for faster subsequent runs
+```bash
+# macOS / Linux shell:
+export OLLAMA_MODEL='qwen3.8:27b-mlx'
+export OLLAMA_FALLBACK_MODEL='qwen3.8:27b-mlx'
+python -m streamlit run main.py
+```
+
+In PowerShell, use `$env:OLLAMA_MODEL='YOUR_INSTALLED_MODEL'` and `$env:OLLAMA_FALLBACK_MODEL='YOUR_INSTALLED_MODEL'` instead. The benchmark's MLX-specific model tag is not assumed to be available from a standard `ollama pull` on every machine.
+
+## Use the app
+
+1. Enter a public HTTP(S) URL. The app captures one page; it does not crawl a whole website.
+2. Keep **Structured records** selected. Adjust source chunk size or supply a CSS content selector when needed.
+3. Click **Scrape Website**; inspect **Page capture details** and **View source blocks**.
+4. Describe the desired records and provide comma-separated fields, for example `name,price`.
+5. Click **Extract records** and review the table, status, rejected records and **Evidence and extraction details**.
+6. Download JSON with provenance and evidence, or use the table's CSV export. Switch to **Free text** for text output through the legacy parsing path.
+
+Example: capture the Books to Scrape page shown in the demo, request its book title and displayed price, and keep `name,price` as the fields. Source evidence confirms text presence, not correct interpretation or association; review important output.
+
+## Configuration and recovery
+
+| Setting | Current behavior |
+| --- | --- |
+| `OLLAMA_MODEL` / `OLLAMA_FALLBACK_MODEL` | Environment overrides for primary and fallback model names |
+| `OLLAMA_BASE_URL` | Defaults to `http://localhost:11434`; changing it can send page content to the configured endpoint |
+| Chunk size | Sidebar: 500–4,000 characters; default 3,000; not a token guarantee |
+| Model requests | 60-second timeout, two attempts per model/chunk, one-second retry delay |
+| Browser capture defaults | 12-second navigation, 10-second content, 40-second overall budget; up to two attempts; 0.75-second content stability |
+| `CHROME_BINARY` / `CHROMEDRIVER` | Optional explicit paths to existing compatible executables |
+
+Structured extraction uses the native `/api/generate` client in `ollama_client.py` (temperature 0, seed 42, 8,192-token context, 2,048-token output limit). Free-text parsing uses `langchain_ollama` and its generation settings from `config.py`. Those two paths do not use every configuration option identically.
+
+Normal browser startup uses Selenium Manager. If driver provisioning fails, run `python setup_chromedriver.py`: the recovery utility uses `webdriver-manager`, tests `about:blank` and saves the verified path/version in ignored `runs/chromedriver.json`. Rerun it after a Chrome upgrade. Inspect capture outcomes instead of assuming driver setup or a stable loading placeholder proves a page is ready.
+
+## Tests
+
+```bash
+python -m unittest discover -s tests -p 'test_*.py' -v
+# Real Chrome against controlled local fixture pages:
+RUN_BROWSER_TESTS=1 python -m unittest discover -s tests/browser -v
+```
+
+For PowerShell, set `$env:RUN_BROWSER_TESTS='1'` before the browser command. Initial driver provisioning may need internet. The reviewed suite has 33 isolated unit/UI/reference/driver tests and eight actual Chrome tests. CI separates them; they verify behavior, not extraction accuracy. `test_scraper.py` is an older manual integration check requiring Chrome, a live page and Ollama.
+
+## Repository map
+
+- `main.py`: Streamlit workflow, retained results and downloads.
+- `scrape.py`, `browser_driver.py`, `setup_chromedriver.py`: bounded capture and driver resolution/recovery.
+- `structured_content.py`, `structured_parse.py`, `ollama_client.py`: semantic blocks, structured extraction and native local-model requests.
+- `content.py`, `parse.py`: free-text cleaning and legacy extraction path.
+- `evaluation/`: frozen references, benchmarks, published reports and raw responses.
+- `tests/`: isolated behavior tests; `tests/browser/`: actual Chrome tests.
+- `runs/`: ignored generated captures and benchmark runs; `.venv/`: ignored local environment.
+
+## URL policy and limits
+
+The public capture API rejects private/localhost targets, embedded credentials and unusual ports. Browser tests inject an exact controlled localhost origin; that does not disable the default policy. Redirect checks occur after browser navigation and do not cover every subresource request or DNS rebinding. The application is a local tool; shared hosting would require outbound network controls and request limits.
+
+There is no demonstrated general support for authenticated sites, CAPTCHA, pagination, unlimited scrolling or OCR. Arbitrary webpage instructions can influence a model, and exact source presence does not prove zero hallucinations or correct entity relationships. Predictions and diagnostics distinguish partial or failed work; review coverage and failure cases before using extracted data.
 
 ## License
-This project is licensed under the MIT License. See the LICENSE file for more details.
 
+Code is MIT licensed; see [LICENSE](LICENSE). Source pages retain their own terms and content rights.
 
 ## Extraction outcome and recovery
 
