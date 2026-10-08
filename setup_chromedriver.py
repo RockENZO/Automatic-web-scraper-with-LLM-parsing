@@ -1,79 +1,55 @@
 #!/usr/bin/env python3
-"""
-ChromeDriver Setup Utility for Automatic Web Scraper
-This script helps diagnose and fix ChromeDriver compatibility issues.
-"""
+"""Install, verify and persist a recovery driver consumed by the scraper."""
 
-import subprocess
-import sys
-import os
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
+from browser_driver import get_chrome_version, save_verified_driver
 
-def get_chrome_version():
-    """Get the installed Chrome browser version."""
-    try:
-        chrome_path = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-        result = subprocess.run([chrome_path, "--version"], 
-                              capture_output=True, text=True)
-        return result.stdout.strip()
-    except Exception as e:
-        print(f"Error getting Chrome version: {e}")
-        return None
 
-def setup_chromedriver():
-    """Setup and test ChromeDriver."""
-    print("🔧 Setting up ChromeDriver...")
-    
-    # Get Chrome version
-    chrome_version = get_chrome_version()
-    if chrome_version:
-        print(f"✅ Chrome version: {chrome_version}")
-    else:
-        print("❌ Could not detect Chrome version")
+def setup_chromedriver(
+    *, driver_installer=None, driver_factory=None, version_reader=None, record_path=None
+):
+    version = (version_reader or get_chrome_version)()
+    if not version:
+        print("Could not detect Chrome. Install it or set CHROME_BINARY.")
         return False
-    
-    # Download compatible ChromeDriver
+    driver = None
     try:
-        print("📥 Downloading compatible ChromeDriver...")
-        driver_path = ChromeDriverManager().install()
-        print(f"✅ ChromeDriver installed at: {driver_path}")
-    except Exception as e:
-        print(f"❌ Error downloading ChromeDriver: {e}")
-        return False
-    
-    # Test ChromeDriver
-    try:
-        print("🧪 Testing ChromeDriver...")
-        options = Options()
-        options.add_argument("--headless")
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage")
-        
-        service = Service(driver_path)
-        driver = webdriver.Chrome(service=service, options=options)
-        driver.get("https://www.google.com")
-        print("✅ ChromeDriver test successful!")
-        driver.quit()
+        if driver_installer is None:
+            from webdriver_manager.chrome import ChromeDriverManager
+
+            driver_installer = lambda: ChromeDriverManager().install()
+        path = driver_installer()
+        if driver_factory is None:
+            from selenium import webdriver
+            from selenium.webdriver.chrome.options import Options
+            from selenium.webdriver.chrome.service import Service
+
+            options = Options()
+            options.add_argument("--headless=new")
+            import os
+
+            if os.getenv("CHROME_BINARY"):
+                options.binary_location = os.environ["CHROME_BINARY"]
+            driver = webdriver.Chrome(service=Service(path), options=options)
+        else:
+            driver = driver_factory(path)
+        driver.get("about:blank")
+        save_verified_driver(path, driver.capabilities["browserVersion"], record_path)
+        print("Verified driver saved for subsequent scraper sessions:", path)
         return True
-    except Exception as e:
-        print(f"❌ ChromeDriver test failed: {e}")
+    except Exception as error:
+        print("ChromeDriver setup failed:", error)
         return False
+    finally:
+        if driver is not None:
+            try:
+                driver.quit()
+            except Exception:
+                pass
+
 
 def main():
-    """Main function."""
-    print("🤖 ChromeDriver Setup Utility")
-    print("=" * 40)
-    
-    if setup_chromedriver():
-        print("\n🎉 ChromeDriver setup completed successfully!")
-        print("You can now run the web scraper without ChromeDriver issues.")
-    else:
-        print("\n💥 ChromeDriver setup failed!")
-        print("Please check the error messages above and try again.")
-        sys.exit(1)
+    raise SystemExit(0 if setup_chromedriver() else 1)
+
 
 if __name__ == "__main__":
     main()

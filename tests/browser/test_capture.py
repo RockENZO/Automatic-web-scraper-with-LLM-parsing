@@ -33,7 +33,11 @@ class Handler(BaseHTTPRequestHandler):
             return
         if self.path == "/slow":
             time.sleep(3)
-        if self.path == "/retry":
+        if self.path == "/body-empty-main":
+            body = "<main></main><div>Readable product content</div>"
+        elif self.path == "/body-hidden-main":
+            body = '<main style="display:none">Hidden</main><div>Readable product content</div>'
+        elif self.path == "/retry":
             Handler.attempts += 1
             body = (
                 "<body></body>"
@@ -76,6 +80,8 @@ class BrowserTests(unittest.TestCase):
             else Service()
         )
         warm = webdriver.Chrome(options=chrome, service=service)
+        cls.driver_path = warm.service.path
+        cls.browser_version = warm.capabilities["browserVersion"]
         warm.quit()
         cls.server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
         cls.thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
@@ -144,6 +150,57 @@ class BrowserTests(unittest.TestCase):
         r = self.capture("/blocked", attempts=2)
         self.assertEqual(r.error_code, "blocked_redirect")
         self.assertEqual(len(r.attempts), 1)
+
+    def test_implicit_readiness_falls_back_but_explicit_target_does_not(self):
+        for suffix in ("/body-empty-main", "/body-hidden-main"):
+            with tempfile.TemporaryDirectory() as root:
+                r = scrape_page(
+                    self.base + suffix,
+                    ScrapeOptions(stable_seconds=0.2, attempts=1, overall_timeout=25),
+                    Path(root) / "fallback",
+                    _test_origin=self.origin,
+                )
+                self.assertEqual(r.status, "success", r.as_dict())
+                self.assertIn("Readable product content", r.html)
+        with tempfile.TemporaryDirectory() as root:
+            r = scrape_page(
+                self.base + "/body-empty-main",
+                ScrapeOptions(
+                    content_selector="main",
+                    stable_seconds=0.2,
+                    content_timeout=0.5,
+                    attempts=1,
+                    overall_timeout=25,
+                ),
+                Path(root) / "explicit",
+                _test_origin=self.origin,
+            )
+            self.assertEqual(r.error_code, "content_timeout", r.as_dict())
+
+    def test_capture_reuses_verified_driver_when_manager_is_unavailable(self):
+        from unittest.mock import patch
+
+        from browser_driver import save_verified_driver
+        from scrape import _capture_once
+
+        with tempfile.TemporaryDirectory() as root:
+            record = Path(root) / "driver.json"
+            save_verified_driver(self.driver_path, self.browser_version, record)
+            with (
+                patch.dict(os.environ, {"CHROMEDRIVER": ""}),
+                patch("browser_driver.DRIVER_RECORD", record),
+                patch(
+                    "selenium.webdriver.common.selenium_manager.SeleniumManager.binary_paths",
+                    side_effect=AssertionError("Manager must not run"),
+                ),
+            ):
+                result = _capture_once(
+                    self.base + "/delayed",
+                    ScrapeOptions(content_selector="#data", stable_seconds=0.2),
+                    Path(root),
+                    self.origin,
+                )
+            self.assertEqual(result["status"], "success", result)
 
     def test_hard_deadline_and_default_public_policy(self):
         with tempfile.TemporaryDirectory() as root:

@@ -1,6 +1,7 @@
 """Freeze real public DOM references before model execution; separate live/frozen scores."""
 
 import argparse
+import hashlib
 import importlib.metadata
 import json
 import platform
@@ -16,6 +17,54 @@ from evaluation.benchmark import RecordedClient, rates, score, sha
 from scrape import ScrapeOptions, scrape_page
 from structured_content import chunk_blocks, extract_blocks
 from structured_parse import extract_structured
+
+
+class ReferenceChanged(ValueError):
+    """Live reference values or structure no longer match the frozen benchmark."""
+
+
+def package_versions():
+    versions = {}
+    for name in ("selenium", "beautifulsoup4", "streamlit"):
+        try:
+            versions[name] = importlib.metadata.version(name)
+        except importlib.metadata.PackageNotFoundError:
+            versions[name] = None
+    return versions
+
+
+def code_hashes():
+    return {
+        str(p.relative_to(ROOT)): sha(p)
+        for p in [
+            ROOT / "config.py",
+            ROOT / "utils.py",
+            ROOT / "content.py",
+            ROOT / "parse.py",
+            ROOT / "scrape.py",
+            ROOT / "browser_driver.py",
+            ROOT / "structured_content.py",
+            ROOT / "structured_parse.py",
+            ROOT / "ollama_client.py",
+            ROOT / "evaluation/benchmark.py",
+            Path(__file__),
+        ]
+    }
+
+
+def effective_settings():
+    return {
+        "primary_model": config.OLLAMA_MODEL,
+        "fallback_model": config.OLLAMA_FALLBACK_MODEL,
+        "context_tokens": config.OLLAMA_NUM_CTX,
+        "request_timeout_seconds": config.OLLAMA_TIMEOUT,
+        "attempts_per_model_chunk": config.OLLAMA_ATTEMPTS,
+        "retry_delay_seconds": config.OLLAMA_RETRY_DELAY,
+        "source_chunk_budget": 1400,
+        "max_chunk_characters": config.MAX_CHUNK_SIZE,
+        "generation": {"temperature": 0, "seed": 42, "num_predict": 2048},
+        "endpoint_sha256": hashlib.sha256(config.OLLAMA_BASE_URL.encode()).hexdigest(),
+    }
 
 
 def region(html, case):
@@ -113,6 +162,8 @@ def evaluate(dataset, output, model, mode="both"):
     if identity is None:
         raise ValueError("Exact installed model identity required")
     config.OLLAMA_MODEL = config.OLLAMA_FALLBACK_MODEL = model
+    provenance = code_hashes()
+    settings = effective_settings()
     output.mkdir(parents=True)
     reports = []
     for index, case in enumerate(manifest["cases"]):
@@ -127,6 +178,7 @@ def evaluate(dataset, output, model, mode="both"):
             capture = None
             error = None
             drift = False
+            error_code = None
             try:
                 html = (dataset / case["snapshot"]).read_text()
                 if variant == "live":
@@ -141,8 +193,14 @@ def evaluate(dataset, output, model, mode="both"):
                     )
                     if capture.status != "success":
                         raise RuntimeError(capture.error_code)
-                    html, reference = region(capture.html, case)
+                    try:
+                        html, reference = region(capture.html, case)
+                    except ValueError as exc:
+                        drift = True
+                        raise ReferenceChanged(str(exc)) from exc
                     drift = reference != case["expected"]
+                    if drift:
+                        raise ReferenceChanged("Live reference values changed")
                 blocks = extract_blocks(html)
                 chunks = chunk_blocks(blocks, 1400)
                 result = extract_structured(
@@ -166,7 +224,16 @@ def evaluate(dataset, output, model, mode="both"):
                 detail = result.as_dict()
             except Exception as exc:
                 error = type(exc).__name__ + ": " + str(exc)
-                status = "failed"
+                error_code = (
+                    "reference_changed"
+                    if isinstance(exc, ReferenceChanged)
+                    else "evaluation_failed"
+                )
+                status = (
+                    "reference_changed"
+                    if isinstance(exc, ReferenceChanged)
+                    else "failed"
+                )
                 detail = None
                 metrics = (
                     score([], case["expected"], list(case["fields"]), "")
@@ -179,6 +246,7 @@ def evaluate(dataset, output, model, mode="both"):
                     "variant": variant,
                     "status": status,
                     "error": error,
+                    "error_code": error_code,
                     "reference_changed": drift,
                     "scores": metrics,
                     "result": detail,
@@ -208,9 +276,14 @@ def evaluate(dataset, output, model, mode="both"):
             )
             for kind in ("fields", "records")
         }
+        if not scored:
+            for kind in ("fields", "records"):
+                for metric in ("precision", "recall", "f1"):
+                    aggregates[variant][kind][metric] = None
         aggregates[variant].update(
             cases=len(selected),
             scored_cases=len(scored),
+            reference_changed_cases=sum(r["reference_changed"] for r in selected),
             failed_cases=sum(r["status"] == "failed" for r in selected),
             total_seconds=sum(r["seconds"] for r in selected),
             source_presence_failures=sum(
@@ -231,21 +304,10 @@ def evaluate(dataset, output, model, mode="both"):
         "runtime": {
             "python": platform.python_version(),
             "platform": platform.platform(),
-            "packages": {
-                n: importlib.metadata.version(n)
-                for n in ("selenium", "beautifulsoup4", "streamlit")
-            },
+            "packages": package_versions(),
         },
-        "code_sha256": {
-            str(p.relative_to(ROOT)): sha(p)
-            for p in [
-                ROOT / "scrape.py",
-                ROOT / "structured_content.py",
-                ROOT / "structured_parse.py",
-                ROOT / "ollama_client.py",
-                Path(__file__),
-            ]
-        },
+        "code_sha256": provenance,
+        "effective_settings": settings,
         "aggregate": aggregates,
         "cases": reports,
         "limitations": [

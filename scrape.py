@@ -118,9 +118,12 @@ let nodes;
 try { nodes = selector ? [...document.querySelectorAll(selector)] :
   [...document.querySelectorAll('main, article, [role="main"]')]; }
 catch (_) { return {invalid_selector: true}; }
-const candidates = nodes.length ? nodes : (selector ? [] : [document.body]);
-return candidates.filter(n => n && getComputedStyle(n).display !== 'none' &&
-  getComputedStyle(n).visibility !== 'hidden').map(n => (n.innerText || '').trim()).join('\\n').trim();
+function textOf(candidates) {
+  return candidates.filter(n => n && getComputedStyle(n).display !== 'none' &&
+    getComputedStyle(n).visibility !== 'hidden').map(n => (n.innerText || '').trim()).join('\\n').trim();
+}
+const semanticText = textOf(nodes);
+return semanticText || (!selector ? textOf([document.body]) : '');
 """
 
 
@@ -152,11 +155,10 @@ def _capture_once(url, options, directory, test_origin=None, driver_factory=None
             chrome.add_argument("--disable-dev-shm-usage")
             if os.getenv("CHROME_BINARY"):
                 chrome.binary_location = os.environ["CHROME_BINARY"]
-            service = (
-                Service(executable_path=os.environ["CHROMEDRIVER"])
-                if os.getenv("CHROMEDRIVER")
-                else Service()
-            )
+            from browser_driver import resolve_driver
+
+            installed = resolve_driver()
+            service = Service(executable_path=installed) if installed else Service()
             driver = webdriver.Chrome(options=chrome, service=service)
         else:
             driver = driver_factory()

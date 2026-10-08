@@ -246,8 +246,8 @@ Zero unsupported returned values is a lexical source-presence result, not proof 
 The app now uses `scrape_page()` and a structured `ScrapeResult`. The original `scrape_website()` remains an HTML-returning compatibility wrapper; its optional `wait_time` is now a content deadline, not a fixed sleep.
 
 - Defaults: 12-second navigation timeout, 10-second content timeout, 40-second overall budget, 0.75-second non-empty content stability and at most two attempts. Retry backoff is 0.5 seconds; all attempts share the overall budget.
-- Specify a CSS content selector for dynamic pages. Without one, the heuristic watches `main`, `article` or `[role=main]` text when available, otherwise body text. A stable loading placeholder can still appear ready; stability does not prove that every asynchronous record has arrived.
-- Each attempt uses a fresh Chrome session. Selenium Manager provisions the driver; `CHROMEDRIVER` and `CHROME_BINARY` can supply known local binaries. Chrome's sandbox is enabled by default.
+- Specify a CSS content selector for dynamic pages. Without one, the heuristic watches non-empty visible `main`, `article` or `[role=main]` text and falls back to body text if those candidates are empty or hidden. An explicit selector never falls back to unrelated body content. A stable loading placeholder can still appear ready; stability does not prove that every asynchronous record has arrived.
+- Each attempt uses a fresh Chrome session. Selenium Manager provisions the driver by default; `CHROMEDRIVER` and `CHROME_BINARY` can supply known local binaries. A successful `python setup_chromedriver.py` persists its verified driver path and browser version in ignored `runs/chromedriver.json`, which subsequent captures reuse before invoking Selenium Manager. Missing or mismatched saved drivers fall back to Manager; rerun setup after a Chrome upgrade. Chrome's sandbox is enabled by default.
 - A supervised child process bounds driver startup, DNS checks, navigation, content polling and artifact capture. POSIX process groups are terminated on completion/timeout; cleanup has a short grace period. Windows tree termination is implemented but not verified by this macOS/Linux test matrix.
 - Outcomes distinguish invalid/public-policy-rejected URLs, blocked final redirects, navigation/content/overall timeouts, empty content, invalid selectors, excessive HTML, network/browser failures and worker crashes. Configuration/policy failures are not retried.
 - HTML/screenshot diagnostics are retained when capture has time to produce them, together with attempt outcomes, requested/final URL, browser version, elapsed time and an HTML hash. A hard startup/deadline failure may have no screenshot. Generated artifacts live under ignored `runs/browser/`.
@@ -262,7 +262,7 @@ python -m unittest discover -s tests -p 'test_*.py'
 RUN_BROWSER_TESTS=1 python -m unittest discover -s tests/browser -v
 ```
 
-The six browser tests use an explicitly injected **exact localhost origin** on a controlled server. The UI and default capture API continue to reject private URLs. These tests measure delayed content, unstable/empty targets, redirects, retries, invalid CSS and navigation/overall deadlines; they are not public-web accuracy evidence. The browser test suite provisions Chrome before timing individual scenarios. CI runs them separately from the 29 isolated unit/UI/reference tests.
+The eight browser tests use an explicitly injected **exact localhost origin** on a controlled server. The UI and default capture API continue to reject private URLs. These tests measure delayed content, unstable/empty targets, redirects, retries, invalid CSS and navigation/overall deadlines; they are not public-web accuracy evidence. The browser test suite provisions Chrome before timing individual scenarios. CI runs them separately from the 33 isolated unit/UI/reference/driver tests.
 
 ### Frozen versus live public-page benchmark
 
@@ -283,7 +283,7 @@ python evaluation/public_benchmark.py evaluate \
   --output runs/public-web/both --model YOUR_INSTALLED_MODEL --mode both
 ```
 
-Mutation of frozen snapshots is rejected. Live reference drift is reported and excluded from quality scoring. Actual browser capture failures are included as missed expected records when the reference remains valid. Field scoring uses the first requested field as the record-identity anchor, so a changed anchor also penalizes associated fields. No semantic normalization or post-result reference editing is applied.
+Mutation of frozen snapshots is rejected. Live reference drift—including missing record regions, missing fields or empty fields—is reported and excluded from quality scoring, without calling the model. When every reference drifts, quality rates are null rather than a zero-accuracy claim. Actual browser capture failures are included as missed expected records when the reference remains valid. Field scoring uses the first requested field as the record-identity anchor, so a changed anchor also penalizes associated fields. No semantic normalization or post-result reference editing is applied.
 
 Actual model: `qwen3.8:27b-mlx`, digest `5642e97495e1a088883805981563dcdc4a040c2f53388b7a41d1f24d3622cf7e`, local MLX runner. Chrome `154.0.8037.97`, Selenium `4.50.0`, Python `3.12.13` on macOS. The same extractor, model and frozen references were used in both modes:
 
@@ -298,3 +298,8 @@ Actual model: `qwen3.8:27b-mlx`, digest `5642e97495e1a088883805981563dcdc4a040c2
 The book and country records match exactly. In both quote views, the model omits the displayed outer quotation marks. The frozen reference retains them, so the quote identity anchor and associated author field count as mismatches even though authors are correctly named. Raw responses, returned records and scores are preserved in [public_web_20261008.json](evaluation/reports/public_web_20261008.json). This lexical metric is not a semantic judgment, and zero unsupported strings is not proof of zero hallucinations.
 
 These measurements are **not a paired legacy improvement result** and cannot be compared directly with the earlier 16 synthetic fixtures. Successful capture on six scoped demo pages does not establish production readiness. The next extraction-quality study should reserve new evaluation pages before changing prompts or normalization rules in response to these failures.
+
+
+### Review hardening
+
+Benchmark metadata tolerates absent optional packages (for example Streamlit/Selenium during frozen-only evaluation), recording their versions as null instead of failing after model inference. Provenance is captured before processing: code hashes include the scoring/client module, configuration, URL policy and driver resolver, and effective inference settings include context, generation limits, retries, timeout and an endpoint hash. Existing published reports remain historical evidence from their recorded code version; these fixes do not replace their responses or scores.
