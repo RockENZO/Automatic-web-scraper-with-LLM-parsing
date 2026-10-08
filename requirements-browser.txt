@@ -1,0 +1,2 @@
+-r requirements-benchmark.txt
+selenium==4.50.0

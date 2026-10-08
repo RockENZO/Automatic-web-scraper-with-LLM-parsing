@@ -9,7 +9,7 @@ The local Python environment is ignored by Git. Create `.venv` during setup; do 
 The scraper accepts only HTTP(S) URLs resolving to public IP addresses and rejects localhost, private addresses, credentials, and unusual ports. DNS can change after validation, and browsers can follow redirects. If you deploy this as a shared web service, also restrict outbound network access and apply request limits at the hosting layer.
 
 ## Features
-- 🚀 **Advanced Web Scraping**: Scrape the body content of any web page with improved error handling
+- 🚀 **Advanced Web Scraping**: Capture readable content from public HTTP(S) pages with configurable content waits, bounded retries and diagnostic artifacts
 - 🧹 **Smart Content Cleaning**: Clean the scraped content by removing scripts, styles, and unwanted elements
 - 📊 **Intelligent Chunking**: Split large content into manageable chunks for processing
 - 🤖 **AI-Powered Parsing**: Parse content using the powerful Ollama gpt-oss:20b model
@@ -238,3 +238,63 @@ Zero unsupported returned values is a lexical source-presence result, not proof 
 [Full metrics and per-case predictions](evaluation/reports/structured_benchmark_20260930.json) and [raw model responses / grounded records](evaluation/reports/raw_responses_20260930.jsonl) are included with hashes. Generated runs remain local under `runs/structured-benchmark/`.
 
 **Resume wording:** “Built a source-verifiable local LLM extraction pipeline with semantic HTML blocks, structured JSON and duplicate merging; on 16 fixed synthetic regression fixtures, improved field exact-match F1 from 0.778 to 0.938 and record F1 from 0.727 to 0.933, with published raw responses and latency tradeoffs.”
+
+## Browser reliability and real-page evaluation (2026-10-08)
+
+### Capture behavior
+
+The app now uses `scrape_page()` and a structured `ScrapeResult`. The original `scrape_website()` remains an HTML-returning compatibility wrapper; its optional `wait_time` is now a content deadline, not a fixed sleep.
+
+- Defaults: 12-second navigation timeout, 10-second content timeout, 40-second overall budget, 0.75-second non-empty content stability and at most two attempts. Retry backoff is 0.5 seconds; all attempts share the overall budget.
+- Specify a CSS content selector for dynamic pages. Without one, the heuristic watches `main`, `article` or `[role=main]` text when available, otherwise body text. A stable loading placeholder can still appear ready; stability does not prove that every asynchronous record has arrived.
+- Each attempt uses a fresh Chrome session. Selenium Manager provisions the driver; `CHROMEDRIVER` and `CHROME_BINARY` can supply known local binaries. Chrome's sandbox is enabled by default.
+- A supervised child process bounds driver startup, DNS checks, navigation, content polling and artifact capture. POSIX process groups are terminated on completion/timeout; cleanup has a short grace period. Windows tree termination is implemented but not verified by this macOS/Linux test matrix.
+- Outcomes distinguish invalid/public-policy-rejected URLs, blocked final redirects, navigation/content/overall timeouts, empty content, invalid selectors, excessive HTML, network/browser failures and worker crashes. Configuration/policy failures are not retried.
+- HTML/screenshot diagnostics are retained when capture has time to produce them, together with attempt outcomes, requested/final URL, browser version, elapsed time and an HTML hash. A hard startup/deadline failure may have no screenshot. Generated artifacts live under ignored `runs/browser/`.
+- The UI preserves capture diagnostics across reruns, shows the browser screenshot and provides HTML/report downloads. Extraction exports include capture provenance and the final source URL. Failure diagnostics are not extracted records.
+
+Redirect policy is checked after navigation/URL changes, not before every browser network request. It does not prevent an initial redirected/subresource request or DNS rebinding. Shared hosting still requires network egress controls; this remains a local tool.
+
+```bash
+python -m pip install -r requirements-browser.txt
+python -m unittest discover -s tests -p 'test_*.py'
+# Actual browser tests; Selenium Manager may need internet for initial provisioning.
+RUN_BROWSER_TESTS=1 python -m unittest discover -s tests/browser -v
+```
+
+The six browser tests use an explicitly injected **exact localhost origin** on a controlled server. The UI and default capture API continue to reject private URLs. These tests measure delayed content, unstable/empty targets, redirects, retries, invalid CSS and navigation/overall deadlines; they are not public-web accuracy evidence. The browser test suite provisions Chrome before timing individual scenarios. CI runs them separately from the 29 isolated unit/UI/reference tests.
+
+### Frozen versus live public-page benchmark
+
+[evaluation/public_pages.json](evaluation/public_pages.json) specifies six permitted public practice pages across three hosts: three book detail pages, static and JavaScript quote pages, and a countries page. The quote views intentionally share content to exercise JavaScript capture. This is a small demo-site sample, not six independent real-world applications.
+
+Reference fields are joined within each record using predefined DOM selectors, then frozen **before LLM inference**. Model inputs are explicitly bounded to the first 1–3 record regions per page (10 records / 20 non-null fields in total). This does not benchmark whole-site extraction, pagination, authentication, CAPTCHA, OCR or unlimited scrolling. Source URLs, hashes and reference rules are retained. Full capture HTML/screenshots remain local; small model-input snapshot regions are committed for reproduction.
+
+```bash
+# Freeze a new dated dataset; never overwrite existing evidence.
+python evaluation/public_benchmark.py freeze --output runs/public-web/frozen
+# Reproduce extraction from committed snapshots without invoking a browser:
+python evaluation/public_benchmark.py evaluate \
+  --dataset evaluation/public_snapshots/20261008 \
+  --output runs/public-web/frozen-only --model YOUR_INSTALLED_MODEL --mode frozen
+# Both modes: frozen snapshots and a new live browser pass, alternating order.
+python evaluation/public_benchmark.py evaluate \
+  --dataset evaluation/public_snapshots/20261008 \
+  --output runs/public-web/both --model YOUR_INSTALLED_MODEL --mode both
+```
+
+Mutation of frozen snapshots is rejected. Live reference drift is reported and excluded from quality scoring. Actual browser capture failures are included as missed expected records when the reference remains valid. Field scoring uses the first requested field as the record-identity anchor, so a changed anchor also penalizes associated fields. No semantic normalization or post-result reference editing is applied.
+
+Actual model: `qwen3.8:27b-mlx`, digest `5642e97495e1a088883805981563dcdc4a040c2f53388b7a41d1f24d3622cf7e`, local MLX runner. Chrome `154.0.8037.97`, Selenium `4.50.0`, Python `3.12.13` on macOS. The same extractor, model and frozen references were used in both modes:
+
+| Measurement | Frozen regions | Live browser + scoped extraction |
+| --- | ---: | ---: |
+| Public-page capture success | Not applicable | 6 / 6 |
+| Field exact-match precision / recall / F1 | 0.600 / 0.600 / 0.600 | 0.600 / 0.600 / 0.600 |
+| Record exact-match F1 | 0.600 | 0.600 |
+| Whole-run extraction/capture time, summed over cases | 116.82 s | 133.15 s |
+| Returned values absent from canonical source | 0 | 0 |
+
+The book and country records match exactly. In both quote views, the model omits the displayed outer quotation marks. The frozen reference retains them, so the quote identity anchor and associated author field count as mismatches even though authors are correctly named. Raw responses, returned records and scores are preserved in [public_web_20261008.json](evaluation/reports/public_web_20261008.json). This lexical metric is not a semantic judgment, and zero unsupported strings is not proof of zero hallucinations.
+
+These measurements are **not a paired legacy improvement result** and cannot be compared directly with the earlier 16 synthetic fixtures. Successful capture on six scoped demo pages does not establish production readiness. The next extraction-quality study should reserve new evaluation pages before changing prompts or normalization rules in response to these failures.

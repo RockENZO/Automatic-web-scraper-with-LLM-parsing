@@ -1,0 +1,12 @@
+{
+  "scope": "Six public scraping-practice pages, three hosts; narrow predefined record regions. Not representative production websites.",
+  "permission_sources": ["https://toscrape.com/", "https://www.scrapethissite.com/pages/"],
+  "cases": [
+    {"id":"book_attic","url":"https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html","selector":".product_main","scope_selector":".product_main","limit":1,"fields":{"name":"h1","price":".price_color"}},
+    {"id":"book_velvet","url":"https://books.toscrape.com/catalogue/tipping-the-velvet_999/index.html","selector":".product_main","scope_selector":".product_main","limit":1,"fields":{"name":"h1","price":".price_color"}},
+    {"id":"book_soumission","url":"https://books.toscrape.com/catalogue/soumission_998/index.html","selector":".product_main","scope_selector":".product_main","limit":1,"fields":{"name":"h1","price":".price_color"}},
+    {"id":"quotes_static","url":"https://quotes.toscrape.com/","selector":".quote","scope_selector":".quote","limit":2,"fields":{"quote":".text","author":".author"}},
+    {"id":"quotes_javascript","url":"https://quotes.toscrape.com/js/","selector":".quote","scope_selector":".quote","limit":2,"fields":{"quote":".text","author":".author"}},
+    {"id":"countries","url":"https://www.scrapethissite.com/pages/simple/","selector":".country","scope_selector":".country","limit":3,"fields":{"name":".country-name","capital":".country-capital"}}
+  ]
+}
