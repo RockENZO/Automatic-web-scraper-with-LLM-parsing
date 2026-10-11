@@ -97,14 +97,17 @@ class BrowserTests(unittest.TestCase):
 
     def capture(self, path, **kwargs):
         with tempfile.TemporaryDirectory() as root:
-            opts = ScrapeOptions(
-                content_selector="#data",
-                stable_seconds=0.2,
-                navigation_timeout=1,
-                content_timeout=1.5,
-                overall_timeout=25,
-                **kwargs,
-            )
+            options = {
+                "content_selector": "#data",
+                "stable_seconds": 0.2,
+                # Ordinary pages must finish navigation before content readiness
+                # is evaluated, including on shared hosted runners.
+                "navigation_timeout": 5,
+                "content_timeout": 1.5,
+                "overall_timeout": 25,
+            }
+            options.update(kwargs)
+            opts = ScrapeOptions(**options)
             r = scrape_page(
                 self.base + path, opts, Path(root) / "capture", _test_origin=self.origin
             )
@@ -128,7 +131,8 @@ class BrowserTests(unittest.TestCase):
 
     def test_navigation_timeout_is_not_success(self):
         self.assertEqual(
-            self.capture("/slow", attempts=1).error_code, "navigation_timeout"
+            self.capture("/slow", attempts=1, navigation_timeout=1).error_code,
+            "navigation_timeout",
         )
 
     def test_retry_uses_fresh_browser_and_retains_failure_diagnostics(self):
