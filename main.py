@@ -127,6 +127,9 @@ def run_app():
             "Extract records" if mode == "Structured records" else "Parse Content",
             type="primary",
         ):
+            # A new attempt replaces the prior result, even if validation or
+            # extraction fails. Keep the captured page available for a retry.
+            st.session_state.pop("extraction_document", None)
             try:
                 if not description.strip():
                     raise ValueError("Describe the information to extract")
