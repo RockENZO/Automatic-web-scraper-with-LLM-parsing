@@ -22,7 +22,11 @@ class OllamaClient:
                                          headers={'Content-Type': 'application/json'})
         with urllib.request.urlopen(request, timeout=self.timeout) as response:
             result = json.load(response)
-        if result.get('done') is False or result.get('done_reason') == 'length':
+        if not isinstance(result, dict):
+            raise ValueError('Ollama returned an invalid response object')
+        if result.get('error'):
+            raise ValueError('Ollama reported a model error')
+        if result.get('done') is not True or result.get('done_reason') == 'length':
             raise ValueError('Model response was truncated')
         text = result.get('response')
         if not isinstance(text, str):
