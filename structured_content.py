@@ -41,7 +41,7 @@ def extract_blocks(html):
                 if not cells:
                     continue
                 values = [cell.get_text(' ', strip=True) for cell in cells]
-                if headers is None and all(cell.name == 'th' for cell in cells):
+                if all(cell.name == 'th' for cell in cells) and not any(cell.get('scope') == 'row' for cell in cells):
                     headers = values
                     continue
                 if headers and len(headers) == len(values):

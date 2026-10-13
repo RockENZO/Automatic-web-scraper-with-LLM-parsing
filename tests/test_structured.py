@@ -11,6 +11,20 @@ class StructuredTests(unittest.TestCase):
         blocks = extract_blocks(html)
         self.assertEqual([b.text for b in blocks], ['a@b.test', 'name: A\nquantity: 1'])
 
+    def test_repeated_header_rows_are_not_extraction_records(self):
+        html='<table><tr><th>Name</th><th>Price</th></tr><tr><td>Ada</td><td>10</td></tr><tr><th>Name</th><th>Price</th></tr><tr><td>Bob</td><td>20</td></tr></table>'
+        self.assertEqual([b.text for b in extract_blocks(html)],
+                         ['Name: Ada\nPrice: 10','Name: Bob\nPrice: 20'])
+
+    def test_new_column_header_applies_to_following_records(self):
+        html='<table><tr><th>Name</th><th>Price</th></tr><tr><td>Ada</td><td>10</td></tr><tr><th>Name</th><th>Quantity</th></tr><tr><td>Bob</td><td>2</td></tr></table>'
+        self.assertEqual([b.text for b in extract_blocks(html)],
+                         ['Name: Ada\nPrice: 10','Name: Bob\nQuantity: 2'])
+
+    def test_explicit_row_header_cells_remain_data(self):
+        html='<table><tr><th>Name</th><th>Price</th></tr><tr><th scope="row">Ada</th><th scope="row">10</th></tr></table>'
+        self.assertEqual([b.text for b in extract_blocks(html)],['Name: Ada\nPrice: 10'])
+
     def test_records_stay_whole_and_oversized_windows_overlap(self):
         blocks = [Block('a','A'*80),Block('b','B'*80)]
         chunks = chunk_blocks(blocks,180,20)
