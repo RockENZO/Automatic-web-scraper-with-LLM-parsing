@@ -37,11 +37,18 @@ def extract_blocks(html):
         if node.name == 'table':
             headers = None
             for row in node.find_all('tr'):
+                if row.find_parent('table') is not node:
+                    continue
                 cells = row.find_all(['th', 'td'], recursive=False)
                 if not cells:
                     continue
                 values = [cell.get_text(' ', strip=True) for cell in cells]
-                if all(cell.name == 'th' for cell in cells) and not any(cell.get('scope') == 'row' for cell in cells):
+                if all(cell.name == 'th' for cell in cells) and not any(
+                    str(cell.get('scope', '')).lower() == 'row' for cell in cells
+                ):
+                    # Spanning section labels do not define replacement columns.
+                    if any(str(cell.get('colspan', '1')) != '1' for cell in cells):
+                        continue
                     headers = values
                     continue
                 if headers and len(headers) == len(values):

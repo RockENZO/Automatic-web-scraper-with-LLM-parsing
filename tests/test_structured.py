@@ -25,6 +25,20 @@ class StructuredTests(unittest.TestCase):
         html='<table><tr><th>Name</th><th>Price</th></tr><tr><th scope="row">Ada</th><th scope="row">10</th></tr></table>'
         self.assertEqual([b.text for b in extract_blocks(html)],['Name: Ada\nPrice: 10'])
 
+    def test_spanning_group_header_preserves_columns(self):
+        html='<table><tr><th>Name</th><th>Price</th></tr><tr><th colspan="2">Featured</th></tr><tr><td>Ada</td><td>10</td></tr></table>'
+        self.assertEqual([b.text for b in extract_blocks(html)],['Name: Ada\nPrice: 10'])
+
+    def test_uppercase_row_scope_remains_data(self):
+        html='<table><tr><th>Name</th><th>Price</th></tr><tr><th scope="ROW">Ada</th><th scope="ROW">10</th></tr></table>'
+        self.assertEqual([b.text for b in extract_blocks(html)],['Name: Ada\nPrice: 10'])
+
+    def test_nested_headers_do_not_replace_outer_columns(self):
+        html='<table><tr><th>Name</th><th>Details</th></tr><tr><td>Ada</td><td><table><tr><th>Key</th><th>Value</th></tr><tr><td>x</td><td>1</td></tr></table></td></tr><tr><td>Bob</td><td>plain</td></tr></table>'
+        blocks=[b.text for b in extract_blocks(html)]
+        self.assertEqual(blocks[-1],'Name: Bob\nDetails: plain')
+        self.assertEqual(len(blocks),2)
+
     def test_records_stay_whole_and_oversized_windows_overlap(self):
         blocks = [Block('a','A'*80),Block('b','B'*80)]
         chunks = chunk_blocks(blocks,180,20)
