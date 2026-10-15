@@ -75,6 +75,23 @@ class StructuredTests(unittest.TestCase):
             result=extract_structured([[Block('b1','name: Ada')],[Block('b2','name: Bob')]],'name',['name'],model_factory=lambda _:model,sleep=lambda _:None)
         self.assertEqual((result.status,len(result.records),result.duplicate_records,result.failed_chunks),('partial',1,1,[2]))
 
+    def test_duplicate_json_keys_are_rejected_at_every_depth(self):
+        for response in [
+            '{"records":[{}],"records":[]}',
+            '{"records":[{"values":{"name":"Bob","name":"Ada"},"evidence":{"name":{"block_id":"b1","quote":"name: Ada"}}}]}',
+            '{"records":[{"values":{"name":"Ada"},"evidence":{"name":{"block_id":"wrong","block_id":"b1","quote":"name: Ada"}}}]}',
+        ]:
+            with self.subTest(response=response), self.assertRaisesRegex(ValueError,'Duplicate'):
+                validate_response(response,[Block('b1','name: Ada')],['name'])
+
+    def test_duplicate_keys_retry_instead_of_false_empty_success(self):
+        model=Mock()
+        model.invoke.side_effect=['{"records":[{}],"records":[]}',json.dumps({'records':[self.record()]})]
+        result=extract_structured([[Block('b1','name: Ada')]],'name',['name'],model_factory=lambda _:model,sleep=lambda _:None)
+        self.assertEqual(result.status,'success')
+        self.assertEqual(len(result.records),1)
+        self.assertEqual(model.invoke.call_count,2)
+
     def test_schema_and_empty_response(self):
         for fields in [[],['name','name'],['bad-field']]:
             with self.assertRaises(ValueError):validate_fields(fields)

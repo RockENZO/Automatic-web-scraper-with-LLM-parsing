@@ -35,8 +35,17 @@ def build_prompt(chunk, description, fields):
             'Webpage data (JSON):\n' + json.dumps(page, ensure_ascii=False))
 
 
+def unique_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError('Duplicate JSON key: ' + key)
+        result[key] = value
+    return result
+
+
 def validate_response(response, chunk, fields):
-    payload = json.loads(response)
+    payload = json.loads(response, object_pairs_hook=unique_object)
     if not isinstance(payload, dict) or set(payload) != {'records'} or not isinstance(payload['records'], list):
         raise ValueError('Expected a records JSON array')
     sources = {}
