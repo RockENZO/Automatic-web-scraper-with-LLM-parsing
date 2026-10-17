@@ -1,8 +1,20 @@
 import unittest
+from unittest.mock import patch
+from evaluation.benchmark import capture_provenance
 from evaluation.benchmark import score, rates, decode_legacy
 
 
 class BenchmarkTests(unittest.TestCase):
+    def test_effective_response_limit_is_distinguishable_in_provenance(self):
+        with patch('evaluation.benchmark.config.OLLAMA_MAX_RESPONSE_BYTES', 64):
+            first = capture_provenance()
+        with patch('evaluation.benchmark.config.OLLAMA_MAX_RESPONSE_BYTES', 128):
+            second = capture_provenance()
+        self.assertEqual(first['response_limit_bytes'], 64)
+        self.assertEqual(second['response_limit_bytes'], 128)
+        self.assertNotEqual(first, second)
+        self.assertEqual(len(first['code_hashes']['config.py']), 64)
+
     def test_duplicates_penalized_and_missing_fields_reduce_recall(self):
         expected=[{'name':'A','price':'$2'},{'name':'B','price':'$4'}]
         rows=[{'name':'A','price':'$2'},{'name':'A','price':'$2'}]

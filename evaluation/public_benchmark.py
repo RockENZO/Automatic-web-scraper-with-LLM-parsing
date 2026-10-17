@@ -58,6 +58,7 @@ def effective_settings():
         "fallback_model": config.OLLAMA_FALLBACK_MODEL,
         "context_tokens": config.OLLAMA_NUM_CTX,
         "request_timeout_seconds": config.OLLAMA_TIMEOUT,
+        "response_limit_bytes": config.OLLAMA_MAX_RESPONSE_BYTES,
         "attempts_per_model_chunk": config.OLLAMA_ATTEMPTS,
         "retry_delay_seconds": config.OLLAMA_RETRY_DELAY,
         "source_chunk_budget": 1400,

@@ -6,6 +6,7 @@ import unittest
 from pathlib import Path
 
 from evaluation.public_benchmark import evaluate, region
+from evaluation import public_benchmark as benchmark
 
 
 class PublicBenchmarkTests(unittest.TestCase):
@@ -144,6 +145,7 @@ class ReviewRegressionTests(unittest.TestCase):
             self.assertIn("config.py", report["code_sha256"])
             self.assertIn("browser_driver.py", report["code_sha256"])
             self.assertEqual(report["effective_settings"]["primary_model"], "fake")
+            self.assertEqual(report["effective_settings"]["response_limit_bytes"], benchmark.config.OLLAMA_MAX_RESPONSE_BYTES)
 
     def test_structural_live_drift_is_excluded_without_calling_model(self):
         for changed in [
