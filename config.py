@@ -34,3 +34,6 @@ OLLAMA_NUM_CTX = 8192
 OLLAMA_TIMEOUT = 60
 OLLAMA_ATTEMPTS = 2
 OLLAMA_RETRY_DELAY = 1
+
+# Bound native Ollama response bodies before parsing JSON (bytes, including metadata).
+OLLAMA_MAX_RESPONSE_BYTES = 1_000_000

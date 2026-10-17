@@ -23,6 +23,16 @@ def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def capture_provenance():
+    return {
+        'response_limit_bytes': config.OLLAMA_MAX_RESPONSE_BYTES,
+        'code_hashes': {f: sha(ROOT / f) for f in [
+            'config.py', 'parse.py', 'content.py', 'structured_content.py',
+            'structured_parse.py', 'ollama_client.py', 'evaluation/benchmark.py',
+        ]},
+    }
+
+
 def score(predicted, expected, fields, source):
     def records(rows):
         return Counter(json.dumps({f:row.get(f) for f in fields},sort_keys=True,ensure_ascii=False) for row in rows)
@@ -85,6 +95,7 @@ def run(model,output):
         installed=json.load(response)['models']
     identity=next((item for item in installed if item['name']==model),None)
     if identity is None:raise ValueError('Model identity is not available')
+    provenance = capture_provenance()
     reports=[]
     fixture_hashes={}
     for index,case_id in enumerate(manifest['case_ids']):
@@ -124,7 +135,7 @@ def run(model,output):
         metrics={kind:rates({key:sum(r['metrics'][kind][key] for r in subset) for key in ['tp','predicted','expected']}) for kind in ['records','fields']}
         unsupported=sum(r['metrics']['unsupported_values'] for r in subset);values=sum(r['metrics']['predicted_nonnull_values'] for r in subset)
         aggregates[variant]={**metrics,'unsupported_values':unsupported,'predicted_nonnull_values':values,'unsupported_value_rate':unsupported/values if values else 0.0,'total_seconds':sum(r['seconds'] for r in subset),'model_calls':sum(r['calls'] for r in subset),'failed_cases':sum(r['status']=='failed' for r in subset),'partial_cases':sum(r['status']=='partial' for r in subset),'no_match_case_correct':all(not r['predictions'] and r['status']!='failed' for r in subset if r['case']=='no_matches')}
-    summary={'protocol':'all predefined synthetic regression fixtures; same real model and character budget; alternating variant order; one frozen run without result-driven tuning', 'model':identity,'runtime':{'python':platform.python_version(),'platform':platform.platform()},'chunk_budget':budget,'fixture_manifest_sha256':sha(ROOT/'evaluation/fixtures/manifest.json'),'fixture_hashes':fixture_hashes,'code_hashes':{f:sha(ROOT/f) for f in ['parse.py','content.py','structured_content.py','structured_parse.py','ollama_client.py','evaluation/benchmark.py']},'metrics_definitions':{'record':'micro multiset exact match over all requested fields, including nulls','field':'micro multiset exact match of (first-field record identity, field name, verbatim nonnull value)','unsupported_value':'nonnull output value absent from visible canonical source text; lexical grounding only, not semantic truth or instruction immunity','latency':'whole extraction wall time per case including retries and generation; excludes browser retrieval; one run, not a production throughput benchmark'},'aggregate':aggregates,'cases':reports,'limitations':['16 synthetic hand-specified fixtures; not a representative sample of live websites.','Grounding checks source presence, not correct field semantics or resistance to all prompt injections.','No OCR, pagination, CAPTCHA or live browser reliability measured.','Results apply only to this installed model/runtime; default gpt-oss and fallback models were not evaluated.']}
+    summary={'protocol':'all predefined synthetic regression fixtures; same real model and character budget; alternating variant order; one frozen run without result-driven tuning', 'model':identity,'runtime':{'python':platform.python_version(),'platform':platform.platform()},'chunk_budget':budget,'fixture_manifest_sha256':sha(ROOT/'evaluation/fixtures/manifest.json'),'fixture_hashes':fixture_hashes,**provenance,'metrics_definitions':{'record':'micro multiset exact match over all requested fields, including nulls','field':'micro multiset exact match of (first-field record identity, field name, verbatim nonnull value)','unsupported_value':'nonnull output value absent from visible canonical source text; lexical grounding only, not semantic truth or instruction immunity','latency':'whole extraction wall time per case including retries and generation; excludes browser retrieval; one run, not a production throughput benchmark'},'aggregate':aggregates,'cases':reports,'limitations':['16 synthetic hand-specified fixtures; not a representative sample of live websites.','Grounding checks source presence, not correct field semantics or resistance to all prompt injections.','No OCR, pagination, CAPTCHA or live browser reliability measured.','Results apply only to this installed model/runtime; default gpt-oss and fallback models were not evaluated.']}
     (output/'summary.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2)+'\n')
     print(json.dumps(aggregates,indent=2),flush=True)
 
