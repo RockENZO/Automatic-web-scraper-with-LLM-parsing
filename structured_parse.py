@@ -30,7 +30,7 @@ def build_prompt(chunk, description, fields):
             'Return ONLY JSON matching the supplied schema. Each record has values and evidence. '
             'Use null for absent fields and their evidence. Never invent values. '
             'Every non-null value must be copied verbatim from its quote; the quote must be copied '
-            'verbatim from the named block. Keep fields from one record together. '
+            'verbatim from the named block. Keep fields from one record together; all non-null fields must cite the same block_id. '
             'Return {"records": []} when nothing matches.\n'
             'Webpage data (JSON):\n' + json.dumps(page, ensure_ascii=False))
 
@@ -57,6 +57,7 @@ def validate_response(response, chunk, fields):
             raise ValueError('Record does not match requested schema')
         reason = None
         nonempty = False
+        record_blocks = set()
         for name in fields:
             value, citation = record['values'][name], record['evidence'][name]
             if value is None:
@@ -66,9 +67,12 @@ def validate_response(response, chunk, fields):
             if not isinstance(value, str) or not value.strip() or not isinstance(citation, dict) or set(citation) != {'block_id', 'quote'} or not all(isinstance(citation[key], str) for key in citation):
                 raise ValueError('Malformed field or evidence')
             nonempty = True
+            record_blocks.add(citation['block_id'])
             quote = citation['quote']
             if not quote or value not in quote or not any(quote in text for text in sources.get(citation['block_id'], [])):
                 reason = 'unsupported_value_or_quote'
+        if reason is None and len(record_blocks) > 1:
+            reason = 'cross_record_evidence'
         if not nonempty:
             reason = 'empty_record'
         if reason:
