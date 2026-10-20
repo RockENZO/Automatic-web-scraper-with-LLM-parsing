@@ -254,3 +254,7 @@ These measurements are **not a paired legacy improvement result** and cannot be 
 Benchmark metadata tolerates absent optional packages (for example Streamlit/Selenium during frozen-only evaluation), recording their versions as null instead of failing after model inference. Provenance is captured before processing: code hashes include the scoring/client module, configuration, URL policy and driver resolver, and effective inference settings include context, generation limits, retries, timeout and an endpoint hash. Existing published reports remain historical evidence from their recorded code version; these fixes do not replace their responses or scores.
 
 Native Ollama responses are capped at `OLLAMA_MAX_RESPONSE_BYTES` (1,000,000 bytes by default in `config.py`) before JSON decoding. Oversized responses fail the attempt and follow the existing retry/fallback policy. This bounds response reads; it does not replace the configured request timeout or guarantee a total extraction deadline.
+
+### Record evidence boundaries
+
+Structured extraction requires all non-null fields of a record to cite the same semantic source block. Individually supported values from different blocks cannot form an implicit join; such records are rejected and reported as partial/failed extraction. Windows of one long block retain the same ID. This conservative check can abstain on records spread across separate blocks and does not prove that every grouping within a large block is correct. Previously published benchmark results have not been rerun for this rule.
