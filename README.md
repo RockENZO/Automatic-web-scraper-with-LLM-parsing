@@ -95,7 +95,7 @@ python -m unittest discover -s tests -p 'test_*.py' -v
 RUN_BROWSER_TESTS=1 python -m unittest discover -s tests/browser -v
 ```
 
-For PowerShell, set `$env:RUN_BROWSER_TESTS='1'` before the browser command. Initial driver provisioning may need internet. The reviewed suite has 33 isolated unit/UI/reference/driver tests and eight actual Chrome tests. CI separates them; they verify behavior, not extraction accuracy. `test_scraper.py` is an older manual integration check requiring Chrome, a live page and Ollama.
+For PowerShell, set `$env:RUN_BROWSER_TESTS='1'` before the browser command. Initial driver provisioning may need internet. The suite includes isolated unit/UI/reference/driver tests and actual Chrome tests. CI separates them; they verify behavior, not extraction accuracy. `test_scraper.py` is an older manual integration check requiring Chrome, a live page and Ollama.
 
 ## Repository map
 
@@ -258,3 +258,14 @@ Native Ollama responses are capped at `OLLAMA_MAX_RESPONSE_BYTES` (1,000,000 byt
 ### Record evidence boundaries
 
 Structured extraction requires all non-null fields of a record to cite the same semantic source block. Individually supported values from different blocks cannot form an implicit join; such records are rejected and reported as partial/failed extraction. Windows of one long block retain the same ID. This conservative check can abstain on records spread across separate blocks and does not prove that every grouping within a large block is correct. Previously published benchmark results have not been rerun for this rule.
+
+### Nested record containers
+
+An outer article, list item or annotated record wrapper containing nested
+`article`, `li`, `data-record` or `itemscope` records is traversed rather than
+flattened into one evidence block. Child cards receive separate IDs so the
+same-block check can reject values assembled across those cards. Field paragraphs
+within a single leaf card stay together. Shared wrapper headings become separate
+blocks; this conservative boundary rule can abstain when a valid record needs
+both wrapper context and child fields. It does not infer entity identity from
+arbitrary layout or change the historical benchmark scores above.

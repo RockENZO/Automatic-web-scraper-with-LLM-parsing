@@ -28,6 +28,10 @@ def extract_blocks(html):
         if text:
             texts.append(text)
 
+    def is_record_boundary(node):
+        return (node.name in ('article', 'li') or node.has_attr('data-record')
+                or node.has_attr('itemscope'))
+
     def visit(node):
         if isinstance(node, NavigableString):
             add(str(node))
@@ -56,8 +60,10 @@ def extract_blocks(html):
                 else:
                     add(' | '.join(values))
             return
-        if node.name in ('article', 'li', 'p', 'address', 'pre', 'dt', 'dd', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6') or node.has_attr('data-record') or node.has_attr('itemscope'):
-            if not node.find('table'):
+        if node.name in ('p', 'address', 'pre', 'dt', 'dd', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6') or is_record_boundary(node):
+            # A wrapper is not a single record when it contains explicit child
+            # records. Recurse so separate cards cannot share evidence IDs.
+            if not node.find('table') and not node.find(is_record_boundary):
                 add(node.get_text('\n', strip=True))
                 return
         for child in node.children:
