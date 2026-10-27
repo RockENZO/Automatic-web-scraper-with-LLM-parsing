@@ -6,6 +6,14 @@ from structured_parse import extract_structured, validate_response, validate_fie
 
 
 class StructuredTests(unittest.TestCase):
+    def test_deeply_nested_page_does_not_exhaust_python_stack(self):
+        html = '<div>' * 1500 + '<article><p>Ada</p></article>' + '</div>' * 1500
+        self.assertEqual([b.text for b in extract_blocks(html)], ['Ada'])
+
+    def test_iterative_walk_keeps_record_and_loose_text_order(self):
+        html = '<div>before<article>one</article>between<div><article>two</article></div>after</div>'
+        self.assertEqual([b.text for b in extract_blocks(html)], ['before', 'one', 'between', 'two', 'after'])
+
     def test_table_headers_short_values_and_visible_contacts(self):
         html = '<body><header><address>a@b.test</address></header><div hidden>secret</div><table><tr><th>name</th><th>quantity</th></tr><tr><td>A</td><td>1</td></tr></table></body>'
         blocks = extract_blocks(html)

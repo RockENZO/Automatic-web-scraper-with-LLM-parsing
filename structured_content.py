@@ -32,12 +32,16 @@ def extract_blocks(html):
         return (node.name in ('article', 'li') or node.has_attr('data-record')
                 or node.has_attr('itemscope'))
 
-    def visit(node):
+    # Walk without a Python call frame per HTML ancestor. Real pages may
+    # have deeply nested layout wrappers while containing very little text.
+    pending = [soup.body or soup]
+    while pending:
+        node = pending.pop()
         if isinstance(node, NavigableString):
             add(str(node))
-            return
+            continue
         if not isinstance(node, Tag):
-            return
+            continue
         if node.name == 'table':
             headers = None
             for row in node.find_all('tr'):
@@ -59,17 +63,15 @@ def extract_blocks(html):
                     add('\n'.join(f'{header}: {value}' for header, value in zip(headers, values)))
                 else:
                     add(' | '.join(values))
-            return
+            continue
         if node.name in ('p', 'address', 'pre', 'dt', 'dd', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6') or is_record_boundary(node):
             # A wrapper is not a single record when it contains explicit child
-            # records. Recurse so separate cards cannot share evidence IDs.
+            # records. Descend so separate cards cannot share evidence IDs.
             if not node.find('table') and not node.find(is_record_boundary):
                 add(node.get_text('\n', strip=True))
-                return
-        for child in node.children:
-            visit(child)
+                continue
+        pending.extend(reversed(list(node.children)))
 
-    visit(soup.body or soup)
     return [Block(f'b{index:04d}', text) for index, text in enumerate(texts, 1)]
 
 
