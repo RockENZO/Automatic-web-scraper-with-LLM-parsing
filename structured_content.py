@@ -1,6 +1,7 @@
 """Preserve semantic records and table headers in bounded model inputs."""
 from dataclasses import dataclass
 from bs4 import BeautifulSoup, Comment, NavigableString, Tag
+from content import remove_explicitly_hidden
 
 
 @dataclass(frozen=True)
@@ -13,12 +14,7 @@ def extract_blocks(html):
     soup = BeautifulSoup(html, 'html.parser')
     for tag in list(soup.find_all(['script', 'style', 'nav', 'noscript', 'template'])):
         tag.decompose()
-    for tag in list(soup.find_all(True)):
-        if tag.attrs is None:
-            continue
-        style = str(tag.get('style', '')).replace(' ', '').lower()
-        if tag.has_attr('hidden') or str(tag.get('aria-hidden', '')).lower() == 'true' or 'display:none' in style or 'visibility:hidden' in style:
-            tag.decompose()
+    remove_explicitly_hidden(soup)
     for comment in soup.find_all(string=lambda text: isinstance(text, Comment)):
         comment.extract()
     texts = []
