@@ -137,7 +137,9 @@ Structured mode is the default. Provide a task description and 1–12 comma-sepa
 
 The UI displays values in a table and includes source blocks, field evidence, model names, rejected records, failed chunks and status in the JSON export. It retains the last extraction across reruns/downloads and clears it when another scrape starts. Failed extraction is not offered as successful data, and partial results are labelled.
 
-Evidence checks prove that strings occur in visible canonical source text. They do not prove correct field semantics, correct association between entities, or immunity to prompt injection. This is still a local extraction tool, not a verified general-purpose web automation service.
+Both extraction paths omit explicitly hidden markup (`hidden`, `aria-hidden="true"`, and supported inline `display:none`/`visibility:hidden` forms), scripts and inert `template`/`noscript` content. The free-text path additionally retains its legacy omission of headers, footers and asides. This is static HTML filtering, not computed CSS visibility: external stylesheets, CSS cascade/variables, off-screen layout and every browser visibility rule are not evaluated.
+
+Evidence checks prove that strings occur in canonical source text after this supported filtering. They do not prove correct field semantics, correct association between entities, or immunity to prompt injection. This is still a local extraction tool, not a verified general-purpose web automation service.
 
 ### Reproduce the paired quality benchmark
 
