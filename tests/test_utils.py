@@ -27,6 +27,14 @@ class UrlValidationTests(unittest.TestCase):
             with self.subTest(url=url):
                 self.assertFalse(validate_url(url))
 
+    @patch("utils.socket.getaddrinfo", return_value=answers("64:ff9b::7f00:1"))
+    def test_nat64_address_embedding_loopback_blocked(self, resolver):
+        self.assertFalse(validate_url("https://example.com"))
+
+    @patch("utils.socket.getaddrinfo", return_value=answers("64:ff9b::808:808"))
+    def test_nat64_address_embedding_public_allowed(self, resolver):
+        self.assertTrue(validate_url("https://example.com"))
+
     @patch("utils.socket.getaddrinfo", side_effect=OSError("DNS failure"))
     def test_dns_failure_blocked(self, resolver):
         self.assertFalse(validate_url("https://example.com"))

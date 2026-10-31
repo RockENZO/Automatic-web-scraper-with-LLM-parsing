@@ -6,6 +6,16 @@ import re
 import socket
 from urllib.parse import urlparse
 
+# NAT64 well-known prefix (RFC 6052): the low 32 bits carry an IPv4 address that
+# the gateway translates to, so the embedded address decides reachability.
+NAT64_PREFIX = ipaddress.ip_network("64:ff9b::/96")
+
+
+def _reachable_address(address):
+    if address.version == 6 and address in NAT64_PREFIX:
+        return ipaddress.IPv4Address(int(address) & 0xFFFFFFFF)
+    return address
+
 
 def setup_logging(level="INFO"):
     logging.basicConfig(
@@ -36,7 +46,7 @@ def validate_url(url):
         addresses = socket.getaddrinfo(host, parsed.port or (443 if parsed.scheme == "https" else 80),
                                        type=socket.SOCK_STREAM)
         return bool(addresses) and all(
-            ipaddress.ip_address(item[4][0].split("%", 1)[0]).is_global
+            _reachable_address(ipaddress.ip_address(item[4][0].split("%", 1)[0])).is_global
             for item in addresses
         )
     except (ValueError, OSError, TypeError):
