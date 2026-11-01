@@ -2,4 +2,4 @@
 beautifulsoup4==4.15.0
 
 # Trajectory replay suite (pinned to the merged trajectory-replay commit)
-trajectory-replay @ git+https://github.com/RockENZO/trajectory-replay@f02dca237737332e1e01dfff9b85a16daf5085e2
+trajectory-replay @ git+https://github.com/RockENZO/trajectory-replay@07ad121f5beb0d1ad453754d00a8e11ae5b9934e
