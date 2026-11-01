@@ -1,2 +1,5 @@
 # Reproduces the HTML parser used by the real-model fixture benchmark.
 beautifulsoup4==4.15.0
+
+# Trajectory replay suite (pinned to the merged trajectory-replay commit)
+trajectory-replay @ git+https://github.com/RockENZO/trajectory-replay@f02dca237737332e1e01dfff9b85a16daf5085e2
