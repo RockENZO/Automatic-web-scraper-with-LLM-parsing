@@ -103,7 +103,7 @@ For PowerShell, set `$env:RUN_BROWSER_TESTS='1'` before the browser command. Ini
 - `scrape.py`, `browser_driver.py`, `setup_chromedriver.py`: bounded capture and driver resolution/recovery.
 - `structured_content.py`, `structured_parse.py`, `ollama_client.py`: semantic blocks, structured extraction and native local-model requests.
 - `content.py`, `parse.py`: free-text cleaning and legacy extraction path.
-- `evaluation/`: frozen references, benchmarks, published reports and raw responses.
+- `evaluation/`: frozen references, benchmarks, published reports, raw responses and the trajectory replay suite.
 - `tests/`: isolated behavior tests; `tests/browser/`: actual Chrome tests.
 - `runs/`: ignored generated captures and benchmark runs; `.venv/`: ignored local environment.
 
@@ -150,6 +150,25 @@ python -m pip install -r requirements-benchmark.txt
 # Install/start an Ollama model, then choose its exact name from ollama list.
 python evaluation/benchmark.py --model YOUR_INSTALLED_MODEL
 ```
+
+
+### Trajectory replay suite
+
+`evaluation/replay_suite.py` checks the tool trajectory (`capture` → `blocks` → `extract`) rather than only the final extraction answer. It reuses the same 16 synthetic regression fixtures: a recorded run is replayed without a live model, and predicted calls are scored against the gold trajectory with a longest-common-subsequence match on tool name and arguments. Tool results are ignored by the score.
+
+The benchmark install above also pins the `trajectory-replay` dependency to a merged commit. Offline tests need no Ollama, browser or network access:
+
+```bash
+python -m unittest tests.test_replay_suite -v
+```
+
+A live run asks a local Ollama model for the next action at each step and writes one scored report; it refuses to overwrite an existing output path:
+
+```bash
+python evaluation/replay_suite.py live --model YOUR_INSTALLED_MODEL --output runs/replay/YOUR_MODEL.json
+```
+
+The agent model comes from `--model`, while the `extract` tool still uses the configured `OLLAMA_MODEL`/`OLLAMA_FALLBACK_MODEL`; the report records both. This measures observed tool choice and order on synthetic pages only. It does not measure extraction accuracy, model quality, latency or token cost, or behaviour on live websites, and the report's `mean_f1` is a trajectory match score, not a production quality metric.
 
 The benchmark alternates old/new execution order and uses the same model, temperature 0, seed 42, 8,192-token context, 2,048-token output limit and 1,400-character source budget. The baseline is the former cleaning/character-splitting/free-text pipeline, explicitly asked for JSON so it receives the same target field definitions. It permits Markdown fences and concatenated JSON but does not repair values or remove duplicates. The improved pipeline adds semantic blocks, native structured output, evidence validation and deduplication together; this is a combined configuration comparison, not a single-component ablation.
 
