@@ -127,7 +127,15 @@ class ReplaySuiteTests(unittest.TestCase):
                                side_effect=lambda name, case: replay_suite.gold_model(case)):
             report = replay_suite.run_live('gold-model', output, cases=self.cases[:2])
         self.assertEqual(report['summary']['exact'], 2)
-        self.assertEqual(json.loads(output.read_text(encoding='utf-8'))['summary']['cases'], 2)
+        self.assertEqual(report['fixture_manifest_sha256'],
+                         replay_suite.sha(replay_suite.FIXTURE_DIR / 'manifest.json'))
+        self.assertEqual(report['chunk_budget'], replay_suite.chunk_budget())
+        self.assertEqual(report['code_hashes']['evaluation/replay_suite.py'],
+                         replay_suite.sha(replay_suite.ROOT / 'evaluation/replay_suite.py'))
+        self.assertTrue(report['limitations'])
+        persisted = json.loads(output.read_text(encoding='utf-8'))
+        self.assertEqual(persisted['summary']['cases'], 2)
+        self.assertEqual(persisted['fixture_manifest_sha256'], report['fixture_manifest_sha256'])
 
 
 if __name__ == '__main__':

@@ -17,7 +17,9 @@ Live runs need a local Ollama model and are started from the command line:
 
 from __future__ import annotations
 
+import hashlib
 import json
+import platform
 import re
 import sys
 from dataclasses import dataclass
@@ -36,6 +38,38 @@ from structured_content import Block, chunk_blocks, extract_blocks  # noqa: E402
 from structured_parse import extract_structured  # noqa: E402
 
 FIXTURE_DIR = ROOT / 'evaluation' / 'fixtures'
+PROVENANCE_FILES = [
+    'config.py', 'ollama_client.py', 'structured_content.py',
+    'structured_parse.py', 'evaluation/replay_suite.py',
+]
+PROTOCOL = ('Scripted gold trajectory (capture -> blocks -> extract) versus a live agent '
+            'on the 16 synthetic regression fixtures; one run without result-driven tuning. '
+            'Call matching ignores tool results and does not measure extraction accuracy.')
+LIMITATIONS = [
+    '16 synthetic hand-specified fixtures; not a representative sample of live websites.',
+    'Trajectory matching ignores tool results; a correct sequence can still contain wrong extracted values.',
+    'The agent model is not validated for tool-calling quality or latency; extraction calls use the configured primary/fallback models.',
+    'Live runs need a local Ollama endpoint; no live-browser fetch, pagination or CAPTCHA handling is measured.',
+]
+
+
+def sha(path: Path) -> str:
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def capture_provenance() -> dict[str, Any]:
+    return {
+        'protocol': PROTOCOL,
+        'python': platform.python_version(),
+        'platform': platform.platform(),
+        'chunk_budget': chunk_budget(),
+        'fixture_manifest_sha256': sha(FIXTURE_DIR / 'manifest.json'),
+        'requirements_sha256': sha(ROOT / 'requirements-benchmark.txt'),
+        'code_hashes': {name: sha(ROOT / name) for name in PROVENANCE_FILES},
+        'scoring': {'trajectory': 'longest common subsequence on tool name and arguments; results ignored',
+                    'exact': 'same length and every call matches in order'},
+        'limitations': LIMITATIONS,
+    }
 
 
 def load_cases(fixture_dir: Path = FIXTURE_DIR) -> list[dict[str, Any]]:
@@ -171,7 +205,8 @@ def gold_trajectory(case: dict[str, Any], model_factory=None) -> list[ToolCall]:
 def run_live(model_name: str, output: Path, cases: list[dict[str, Any]] | None = None) -> dict[str, Any]:
     """Run the live agent on every fixture and score it against the gold trajectory."""
     cases = cases if cases is not None else load_cases()
-    report: dict[str, Any] = {'model': model_name, 'config_model': config.OLLAMA_MODEL, 'cases': []}
+    report: dict[str, Any] = {'model': model_name, 'config_model': config.OLLAMA_MODEL,
+                              **capture_provenance(), 'cases': []}
     for case in cases:
         gold = gold_trajectory(case)
         live = run_case(case, ollama_agent_model(model_name, case))
