@@ -194,15 +194,42 @@ def run_live(model_name: str, output: Path, cases: list[dict[str, Any]] | None =
     return report
 
 
+USAGE = 'usage: replay_suite.py live --model MODEL --output PATH'
+
+
+def _live_options(argv: list[str]) -> tuple[str, Path] | None:
+    """Parse exactly `live --model MODEL --output PATH` with values present once.
+
+    Reject anything else instead of raising IndexError on a trailing flag.
+    """
+    if not argv or argv[0] != 'live' or len(argv) != 5:
+        return None
+    flags = argv[1::2]
+    values = argv[2::2]
+    if sorted(flags) != ['--model', '--output']:
+        return None
+    pairs = dict(zip(flags, values))
+    model, output = pairs['--model'].strip(), pairs['--output'].strip()
+    if not model or not output or model.startswith('--') or output.startswith('--'):
+        return None
+    return model, Path(output)
+
+
 def main(argv: list[str]) -> int:
-    if len(argv) >= 3 and argv[0] == 'live' and '--model' in argv and '--output' in argv:
-        model = argv[argv.index('--model') + 1]
-        output = Path(argv[argv.index('--output') + 1])
-        summary = run_live(model, output)['summary']
-        print(json.dumps(summary))
+    if argv in (['--help'], ['-h']):
+        print(USAGE)
         return 0
-    print('usage: replay_suite.py live --model MODEL --output PATH', file=sys.stderr)
-    return 2
+    parsed = _live_options(argv)
+    if parsed is None:
+        print(USAGE, file=sys.stderr)
+        return 2
+    model, output = parsed
+    if output.exists():
+        print(f'Refusing to overwrite existing report: {output}', file=sys.stderr)
+        return 2
+    summary = run_live(model, output)['summary']
+    print(json.dumps(summary))
+    return 0
 
 
 if __name__ == '__main__':

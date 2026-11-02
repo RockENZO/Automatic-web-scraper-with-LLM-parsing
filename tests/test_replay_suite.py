@@ -4,8 +4,11 @@ The extractor is stubbed with the expected records of each fixture, so these
 tests check the tool wiring and trajectory scoring only. They do not measure
 extraction quality, and they do not need Ollama or a browser.
 """
+import contextlib
+import io
 import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -81,6 +84,41 @@ class ReplaySuiteTests(unittest.TestCase):
         iterator = iter(plan)
         result = run_agent(lambda history: next(iterator), case['task'], tools)
         self.assertEqual(result.trajectory[0].error, 'unknown page: missing')
+
+    def test_cli_help_prints_usage(self):
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            self.assertEqual(replay_suite.main(['--help']), 0)
+        self.assertIn('--model', stdout.getvalue())
+
+    def test_cli_rejects_malformed_options_without_crashing(self):
+        for argv in [
+            [], ['live', '--model', 'x', '--output'],
+            ['live', '--output', 'out.json', '--model'],
+            ['live', '--model', 'x', '--out', 'y'],
+            ['live', '--model', 'x', '--output', 'y', 'extra'],
+            ['live', '--model', '--output', 'x', 'y'],
+        ]:
+            with self.subTest(argv=argv), contextlib.redirect_stderr(io.StringIO()) as stderr:
+                self.assertEqual(replay_suite.main(argv), 2)
+            self.assertIn('usage:', stderr.getvalue())
+
+    def test_cli_refuses_existing_output(self):
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder) / 'report.json'
+            output.write_text('keep', encoding='utf-8')
+            with contextlib.redirect_stderr(io.StringIO()) as stderr:
+                self.assertEqual(replay_suite.main(['live', '--model', 'm', '--output', str(output)]), 2)
+            self.assertIn('Refusing to overwrite', stderr.getvalue())
+            self.assertEqual(output.read_text(encoding='utf-8'), 'keep')
+
+    def test_cli_runs_with_mocked_live_report(self):
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder) / 'out.json'
+            stdout = io.StringIO()
+            with mock.patch.object(replay_suite, 'run_live', return_value={'summary': {'cases': 2, 'exact': 2}}), contextlib.redirect_stdout(stdout):
+                self.assertEqual(replay_suite.main(['live', '--model', 'm', '--output', str(output)]), 0)
+            self.assertEqual(json.loads(stdout.getvalue()), {'cases': 2, 'exact': 2})
 
     def test_run_live_writes_a_scored_report(self):
         # Uses the gold model through the same report path that a live run would use.
