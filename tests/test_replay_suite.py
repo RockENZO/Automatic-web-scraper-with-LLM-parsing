@@ -129,6 +129,11 @@ class ReplaySuiteTests(unittest.TestCase):
         self.assertEqual(report['summary']['exact'], 2)
         self.assertEqual(report['fixture_manifest_sha256'],
                          replay_suite.sha(replay_suite.FIXTURE_DIR / 'manifest.json'))
+        expected_cases_hash = replay_suite.cases_digest(self.cases[:2])
+        self.assertEqual(report['fixture_cases_sha256'], expected_cases_hash)
+        changed = json.loads(json.dumps(self.cases[:2]))
+        changed[0]['html'] += ' '
+        self.assertNotEqual(replay_suite.cases_digest(changed), expected_cases_hash)
         self.assertEqual(report['chunk_budget'], replay_suite.chunk_budget())
         self.assertEqual(report['code_hashes']['evaluation/replay_suite.py'],
                          replay_suite.sha(replay_suite.ROOT / 'evaluation/replay_suite.py'))

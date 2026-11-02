@@ -57,13 +57,20 @@ def sha(path: Path) -> str:
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def capture_provenance() -> dict[str, Any]:
+def cases_digest(cases: list[dict[str, Any]]) -> str:
+    """Hash the actual fixture payloads, not just their manifest IDs."""
+    payload = json.dumps(cases, sort_keys=True, ensure_ascii=False, separators=(',', ':'))
+    return hashlib.sha256(payload.encode('utf-8')).hexdigest()
+
+
+def capture_provenance(cases: list[dict[str, Any]]) -> dict[str, Any]:
     return {
         'protocol': PROTOCOL,
         'python': platform.python_version(),
         'platform': platform.platform(),
         'chunk_budget': chunk_budget(),
         'fixture_manifest_sha256': sha(FIXTURE_DIR / 'manifest.json'),
+        'fixture_cases_sha256': cases_digest(cases),
         'requirements_sha256': sha(ROOT / 'requirements-benchmark.txt'),
         'code_hashes': {name: sha(ROOT / name) for name in PROVENANCE_FILES},
         'scoring': {'trajectory': 'longest common subsequence on tool name and arguments; results ignored',
@@ -206,7 +213,7 @@ def run_live(model_name: str, output: Path, cases: list[dict[str, Any]] | None =
     """Run the live agent on every fixture and score it against the gold trajectory."""
     cases = cases if cases is not None else load_cases()
     report: dict[str, Any] = {'model': model_name, 'config_model': config.OLLAMA_MODEL,
-                              **capture_provenance(), 'cases': []}
+                              **capture_provenance(cases), 'cases': []}
     for case in cases:
         gold = gold_trajectory(case)
         live = run_case(case, ollama_agent_model(model_name, case))
