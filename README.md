@@ -162,9 +162,9 @@ The benchmark install above also pins the `trajectory-replay` dependency to a me
 python -m unittest tests.test_replay_suite -v
 ```
 
-### Live replay result (2026-11-03, one run)
+### Live replay result (one run)
 
-One live run on the 16 synthetic fixtures with `qwen3.8:27b-mlx` on a local Mac (MLX runner) gave **5 of 16 cases with an exact trajectory match** and a **mean trajectory F1 of 0.708**. This score compares only the tool-call names and arguments, in order. It does not score tool results, extraction values or final answers, so it says nothing about extraction accuracy. The run was a single sample, not a repeated measurement. Its JSON report was written to a local `runs/replay/` path and is not committed here.
+One live run on the 16 synthetic fixtures with `qwen3.8:27b-mlx` on a local Mac (MLX runner) gave **5 of 16 cases with an exact trajectory match** and a **mean trajectory F1 of 0.708**. This score compares only the tool-call names and arguments, in order. It does not score tool results, extraction values or final answers, so it says nothing about extraction accuracy. The run was a single sample, not a repeated measurement. The JSON report from that run is not committed to this repository.
 
 A live run asks a local Ollama model for the next action at each step and writes one scored report; it refuses to overwrite an existing output path:
 
