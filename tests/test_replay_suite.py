@@ -112,6 +112,24 @@ class ReplaySuiteTests(unittest.TestCase):
             self.assertIn('Refusing to overwrite', stderr.getvalue())
             self.assertEqual(output.read_text(encoding='utf-8'), 'keep')
 
+    def test_cli_preserves_report_created_during_evaluation(self):
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder) / 'report.json'
+
+            def concurrent_writer(model_name, case):
+                output.write_text('first writer', encoding='utf-8')
+                return replay_suite.gold_model(case)
+
+            with (mock.patch.object(replay_suite, 'load_cases', return_value=self.cases[:1]),
+                  mock.patch.object(replay_suite, 'ollama_agent_model', side_effect=concurrent_writer),
+                  contextlib.redirect_stderr(io.StringIO()) as stderr):
+                status = replay_suite.main(['live', '--model', 'm', '--output', str(output)])
+
+            self.assertEqual(status, 2)
+            self.assertIn('Refusing to overwrite', stderr.getvalue())
+            self.assertEqual(output.read_text(encoding='utf-8'), 'first writer')
+            self.assertEqual(list(Path(folder).iterdir()), [output])
+
     def test_cli_runs_with_mocked_live_report(self):
         with tempfile.TemporaryDirectory() as folder:
             output = Path(folder) / 'out.json'
@@ -122,7 +140,9 @@ class ReplaySuiteTests(unittest.TestCase):
 
     def test_run_live_writes_a_scored_report(self):
         # Uses the gold model through the same report path that a live run would use.
-        output = ROOT / 'runs' / 'replay-test' / 'report.json'
+        folder = tempfile.TemporaryDirectory()
+        self.addCleanup(folder.cleanup)
+        output = Path(folder.name) / 'nested' / 'report.json'
         with mock.patch.object(replay_suite, 'ollama_agent_model',
                                side_effect=lambda name, case: replay_suite.gold_model(case)):
             report = replay_suite.run_live('gold-model', output, cases=self.cases[:2])

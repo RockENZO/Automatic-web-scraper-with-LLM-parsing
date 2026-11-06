@@ -166,7 +166,7 @@ python -m unittest tests.test_replay_suite -v
 
 One live run on the 16 synthetic fixtures with `qwen3.8:27b-mlx` on a local Mac (MLX runner) gave **5 of 16 cases with an exact trajectory match** and a **mean trajectory F1 of 0.708**. This score compares only the tool-call names and arguments, in order. It does not score tool results, extraction values or final answers, so it says nothing about extraction accuracy. The run was a single sample, not a repeated measurement. The JSON report from that run is not committed to this repository.
 
-A live run asks a local Ollama model for the next action at each step and writes one scored report; it refuses to overwrite an existing output path:
+A live run asks a local Ollama model for the next action at each step and publishes one complete scored report. The output directory must support hard links. If the output path already exists or another run creates it first, the CLI exits with status 2 and preserves the existing report.
 
 ```bash
 python evaluation/replay_suite.py live --model YOUR_INSTALLED_MODEL --output runs/replay/YOUR_MODEL.json

@@ -22,6 +22,7 @@ import json
 import platform
 import re
 import sys
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -232,7 +233,11 @@ def run_live(model_name: str, output: Path, cases: list[dict[str, Any]] | None =
     report['summary'] = {'cases': len(report['cases']), 'exact': exact,
                          'mean_f1': round(sum(r['f1'] for r in report['cases']) / max(1, len(report['cases'])), 5)}
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+    # Publish the complete JSON in one step without replacing a competing writer's report.
+    with tempfile.TemporaryDirectory(dir=output.parent, prefix='.replay-report-') as folder:
+        staged = Path(folder) / 'report.json'
+        staged.write_text(json.dumps(report, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+        output.hardlink_to(staged)
     return report
 
 
@@ -266,10 +271,14 @@ def main(argv: list[str]) -> int:
         print(USAGE, file=sys.stderr)
         return 2
     model, output = parsed
-    if output.exists():
+    if output.exists() or output.is_symlink():
         print(f'Refusing to overwrite existing report: {output}', file=sys.stderr)
         return 2
-    summary = run_live(model, output)['summary']
+    try:
+        summary = run_live(model, output)['summary']
+    except FileExistsError:
+        print(f'Refusing to overwrite existing report: {output}', file=sys.stderr)
+        return 2
     print(json.dumps(summary))
     return 0
 
