@@ -102,6 +102,7 @@ For PowerShell, set `$env:RUN_BROWSER_TESTS='1'` before the browser command. Ini
 - `main.py`: Streamlit workflow, retained results and downloads.
 - `scrape.py`, `browser_driver.py`, `setup_chromedriver.py`: bounded capture and driver resolution/recovery.
 - `structured_content.py`, `structured_parse.py`, `ollama_client.py`: semantic blocks, structured extraction and native local-model requests.
+- `knowledge_base.py`: optional LlamaIndex vector index over extracted `{url, text}` records.
 - `content.py`, `parse.py`: free-text cleaning and legacy extraction path.
 - `evaluation/`: frozen references, benchmarks, published reports, raw responses and the trajectory replay suite.
 - `tests/`: isolated behavior tests; `tests/browser/`: actual Chrome tests.
@@ -212,6 +213,26 @@ Zero unsupported returned values is a lexical source-presence result, not proof 
 [Full metrics and per-case predictions](evaluation/reports/structured_benchmark_20260930.json) and [raw model responses / grounded records](evaluation/reports/raw_responses_20260930.jsonl) are included with hashes. Generated runs remain local under `runs/structured-benchmark/`.
 
 **Resume wording:** “Built a source-verifiable local LLM extraction pipeline with semantic HTML blocks, structured JSON and duplicate merging; on 16 fixed synthetic regression fixtures, improved field exact-match F1 from 0.778 to 0.938 and record F1 from 0.727 to 0.933, with published raw responses and latency tradeoffs.”
+
+### Knowledge base over extracted records
+
+`knowledge_base.py` is an optional layer for asking questions over records that have already been extracted. `build_index` stores each non-empty `{url, text}` record in a LlamaIndex vector index, `retrieve` returns the closest records with their source URLs and similarity scores, and `answer` runs a query engine with a supplied LLM and returns both the answer and the sources it used.
+
+The embedding model and LLM are passed in by the caller; the module itself does not call a hosted service. Retrieval quality depends entirely on the embedding and model used, and this layer does not verify that an answer is supported by the source text or replace the source-evidence checks in structured extraction.
+
+```python
+from knowledge_base import build_index, retrieve
+
+records = [{"url": "https://shop.example/kettle", "text": "Blue kettle costs 24 dollars."}]
+index = build_index(records, embed_model=YOUR_EMBEDDING_MODEL)
+hits = retrieve(index, "How much does the kettle cost?", top_k=3)
+```
+
+Install `requirements-benchmark.txt` for `llama-index-core`; the offline tests use a deterministic embedding and a mock LLM, so they do not download a model or call a service:
+
+```bash
+python -m unittest tests.test_knowledge_base -v
+```
 
 ## Browser reliability and real-page evaluation (2026-10-08)
 
