@@ -154,6 +154,8 @@ class BrowserTests(unittest.TestCase):
         r = self.capture("/blocked", attempts=2)
         self.assertEqual(r.error_code, "blocked_redirect")
         self.assertEqual(len(r.attempts), 1)
+        self.assertEqual(r.artifacts, {})
+        self.assertEqual(r.attempts[0]["artifacts"], {})
 
     def test_implicit_readiness_falls_back_but_explicit_target_does_not(self):
         for suffix in ("/body-empty-main", "/body-hidden-main"):
