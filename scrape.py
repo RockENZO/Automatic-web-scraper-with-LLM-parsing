@@ -223,17 +223,19 @@ def _capture_once(url, options, directory, test_origin=None, driver_factory=None
         result["exception_type"] = name
     finally:
         if driver is not None:
-            for key, filename in [("html", "page.html"), ("screenshot", "page.png")]:
-                try:
-                    path = directory / filename
-                    if key == "html":
-                        path.write_text(driver.page_source[: options.max_html_chars])
-                    else:
-                        driver.save_screenshot(str(path))
-                    if path.exists():
-                        result["artifacts"][key] = str(path)
-                except Exception:
-                    pass
+            # Keep the rejection metadata, but do not persist the blocked page.
+            if result["error_code"] != "blocked_redirect":
+                for key, filename in [("html", "page.html"), ("screenshot", "page.png")]:
+                    try:
+                        path = directory / filename
+                        if key == "html":
+                            path.write_text(driver.page_source[: options.max_html_chars])
+                        else:
+                            driver.save_screenshot(str(path))
+                        if path.exists():
+                            result["artifacts"][key] = str(path)
+                    except Exception:
+                        pass
             try:
                 driver.quit()
             except Exception:
