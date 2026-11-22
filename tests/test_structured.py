@@ -57,6 +57,30 @@ class StructuredTests(unittest.TestCase):
         self.assertTrue(all(c[0].id=='long' for c in chunks))
         self.assertEqual(chunks[0][0].text[-20:],chunks[1][0].text[:20])
 
+    def test_preformatted_padding_does_not_block_structured_extraction(self):
+        blocks = extract_blocks('<pre>name: Ada' + ' ' * 300 + 'name: Bob</pre>')
+        chunks = chunk_blocks(blocks, max_length=100, overlap=20)
+        self.assertEqual(len(chunks), 2)
+        self.assertTrue(all(len(chunk) == 1 and chunk[0].id == blocks[0].id
+                            for chunk in chunks))
+        self.assertTrue(all(sum(len(b.text) + len(b.id) + 12 for b in chunk) <= 100
+                            for chunk in chunks))
+        model = Mock()
+        model.invoke.side_effect = [
+            json.dumps({'records': [{'values': {'name': name}, 'evidence': {
+                'name': {'block_id': blocks[0].id, 'quote': 'name: ' + name}
+            }}]}) for name in ('Ada', 'Bob')
+        ]
+
+        result = extract_structured(
+            chunks, 'Extract names', ['name'], model_factory=lambda _: model
+        )
+
+        self.assertEqual(result.status, 'success')
+        self.assertEqual([record['values']['name'] for record in result.records],
+                         ['Ada', 'Bob'])
+        self.assertEqual(model.invoke.call_count, 2)
+
     def record(self,value='Ada'):
         return {'values':{'name':value},'evidence':{'name':{'block_id':'b1','quote':'name: '+value}}}
 
