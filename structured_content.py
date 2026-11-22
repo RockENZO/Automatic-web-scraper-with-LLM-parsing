@@ -89,16 +89,19 @@ def chunk_blocks(blocks, max_length=3000, overlap=200):
                 if boundary > start:
                     end = boundary
             part = block.text[start:end]
-            cost = len(part) + len(block.id) + 12
-            if current and used + cost > max_length:
-                chunks.append(current)
-                current, used = [], 0
-            current.append(Block(block.id, part))
-            used += cost
+            # Padding can occupy an entire window in preformatted text.
+            if part.strip():
+                cost = len(part) + len(block.id) + 12
+                if current and used + cost > max_length:
+                    chunks.append(current)
+                    current, used = [], 0
+                current.append(Block(block.id, part))
+                used += cost
+                if end < len(block.text):
+                    chunks.append(current)
+                    current, used = [], 0
             if end == len(block.text):
                 break
-            chunks.append(current)
-            current, used = [], 0
             start = max(start + 1, end - overlap)
     if current:
         chunks.append(current)
