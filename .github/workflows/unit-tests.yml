@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: python -m pip install -r requirements-benchmark.txt -r requirements-ui.txt
+      - run: python -m pip install -r requirements.txt -r requirements-benchmark.txt
       - run: python -m unittest discover -s tests -p 'test_*.py'
 
   browser-tests:
