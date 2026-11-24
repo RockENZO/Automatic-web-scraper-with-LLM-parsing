@@ -30,9 +30,15 @@ Recorded from the current app on 8 October 2026 using local `qwen3.8:27b-mlx` an
 
 ## Quick start
 
-Use Python 3.11.5 or later (3.11 and 3.12 tested), Chrome, and a running local Ollama installation with a model that can return the requested structured output. Model memory requirements depend on the model you choose.
+Use Python 3.11.5 or later, Chrome, and a running local Ollama installation with a model that can return the requested structured output. Model memory requirements depend on the model you choose.
 
-The installer requires Pillow 13.0.0 or later on Python 3.11 and newer, and Soup Sieve 4.0.0 or later on Python 3.11.5 and newer. Older Python versions can still install compatible dependencies with known advisories. Use a current Python patch release in a fresh virtual environment to install both fixes.
+| Python | Supported | CI coverage |
+| --- | --- | --- |
+| 3.11 (3.11.5 or a later patch) | Yes | Unit tests |
+| 3.12 | Yes | Unit tests and browser tests |
+| 3.10 and older | No | None; support was removed |
+
+The installer requires Pillow 13.0.0 or later and Soup Sieve 4.0.0 or later. Those fixed releases are unavailable for Python 3.10, which is no longer supported: an install on 3.10 now fails during dependency resolution instead of silently selecting Pillow 12.3.0 and Soup Sieve 2.10 with known advisories. Use a current supported patch release in a fresh virtual environment.
 
 ```bash
 git clone https://github.com/RockENZO/Automatic-web-scraper-with-LLM-parsing.git
