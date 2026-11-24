@@ -1,8 +1,6 @@
-# Streamlit 1.55 still requires Pillow <13. Keep a legacy dependency
-# path for Python 3.10, where Pillow 13 cannot be installed.
-streamlit>=1.55.0; python_version < "3.11"
-streamlit>=1.67.0; python_version >= "3.11"
-Pillow>=13.0.0; python_version >= "3.11"
+# Python 3.10 is not supported; Pillow 13 and Soup Sieve 4 need Python 3.11+.
+streamlit>=1.67.0
+Pillow>=13.0.0
 langchain>=0.2.0
 langchain_ollama>=0.1.0
 selenium==4.50.0
